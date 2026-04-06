@@ -369,12 +369,91 @@
     .formula-row .f-label { color: var(--blue); min-width: 160px; }
     .formula-row .f-value { color: var(--yellow); font-weight: 700; }
 
-    /* ── Responsive ── */
+    /* ── Responsive：平板 (768px–1024px) ── */
+    @media (max-width: 1024px) {
+      .container { max-width: 100%; padding: 16px 14px 40px; }
+      .interactive-area canvas { width: 100%; height: auto; }
+      .tool-panel { position: static; width: 100%; margin-top: 12px; }
+      .carousel-inner img { max-width: 100%; height: auto; }
+      .infographic-wrap { max-width: 100%; overflow-x: auto; }
+      .infographic-wrap img { max-width: 100%; height: auto; }
+    }
+
+    /* ── Responsive：手機 (<768px) ── */
     @media (max-width: 768px) {
       .container { padding: 12px 10px 40px; }
+
+      /* 標題縮小 */
       header h1 { font-size: 1.05rem; }
+      header .meta { font-size: 0.7rem; }
+
+      /* 段落標題縮小 */
+      .section-title { font-size: 1rem; padding: 8px 12px; }
+
+      /* 學習目標 chips 可換行 */
+      .obj-chip { display: inline-flex; flex-wrap: wrap; }
+
+      /* 主題導覽 pills 可換行 */
+      .topic-pill { margin-bottom: 6px; }
+
+      /* 題目選項改單欄 */
       .q-options { grid-template-columns: 1fr; }
+
+      /* Canvas 寬度自適應 */
+      .interactive-area canvas { width: 100%; height: auto; }
+
+      /* 工具面板 */
       .tool-drawer { width: 200px; }
+      .tool-panel { position: static; width: 100%; }
+
+      /* 畫筆按鈕位置調整，不擋內容 */
+      .draw-fab { bottom: 16px; left: 16px; width: 50px; height: 50px; }
+      .draw-toolbar { bottom: 76px; left: 16px; }
+
+      /* 簡報翻頁按鈕觸控友善 */
+      .carousel-btn { width: 44px; height: 44px; font-size: 1.4rem; }
+
+      /* infographic 不超出螢幕 */
+      .infographic-wrap { max-width: 100%; overflow-x: auto; }
+      .infographic-wrap img { max-width: 100%; height: auto; }
+
+      /* 座號輸入觸控友善 */
+      input[type="number"] { min-height: 44px; font-size: 1rem; padding: 8px; }
+      input[type="range"] { min-height: 44px; }
+
+      /* 公式速查改為垂直排列 */
+      .cheat-sheet .formula-row { flex-direction: column; gap: 4px; }
+      .formula-row .f-label { min-width: unset; }
+
+      /* 影片比例正確 */
+      .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+      .video-wrap iframe,
+      .video-wrap video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+      /* 簡報圖片縮放 */
+      .carousel-inner img { max-width: 100%; height: auto; }
+    }
+
+    /* ── 觸控友善：所有可點擊元素至少 44x44px ── */
+    @media (max-width: 768px) {
+      /* 選項按鈕加大 padding */
+      .q-opt { padding: 14px 16px; min-height: 44px; }
+
+      /* 簡報翻頁按鈕加大 */
+      .carousel-btn { min-width: 44px; min-height: 44px; }
+      .carousel-dot { min-width: 14px; min-height: 14px; }
+
+      /* 畫筆顏色圓點加大到 36px */
+      .color-dot { width: 36px; height: 36px; }
+
+      /* 主題導覽 pill 觸控友善 */
+      .topic-pill { min-height: 44px; display: inline-flex; align-items: center; }
+
+      /* 學習目標 chip 觸控友善 */
+      .obj-chip { min-height: 44px; }
+
+      /* 控制按鈕觸控友善 */
+      .ctrl-btn { min-height: 44px; min-width: 44px; padding: 8px 16px; }
     }
 
     /* ── Floating draw button (左側) ── */
@@ -527,6 +606,28 @@
     <div class="q-feedback" id="fb-quiz-s1">∠C = 180° − 45° − 70° = 65°。三角形內角和為 180°，所以第三個角用 180° 減去已知的兩角即可。</div>
   </div>
 
+  <div class="quiz-inline" id="quiz-s1b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：三角形的三個內角和等於幾度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1b',false)">A. 90°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1b',true)">B. 180°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1b',false)">C. 270°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1b',false)">D. 360°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s1b">三角形的內角和恆為 180°，這是三角形最基本的性質之一。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s1c">
+    <div class="q-text">📝 <strong>形成性評量</strong>：一個等腰三角形的兩個底角各為 50°，則頂角為幾度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1c',false)">A. 50°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1c',true)">B. 80°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1c',false)">C. 90°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1c',false)">D. 100°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s1c">頂角 = 180° − 50° − 50° = 80°。利用三角形內角和 180°，減去兩個底角即可求出頂角。</div>
+  </div>
+
   <!-- 資訊圖表 -->
   <div class="card">
     <h3>🖼️ 資訊圖表</h3>
@@ -587,6 +688,28 @@
       <button class="q-opt" onclick="checkQ(this,'quiz-s2',false)">D. 80°</button>
     </div>
     <div class="q-feedback" id="fb-quiz-s2">由外角定理：∠A + ∠C = 120°。因為 ∠C = 2∠A，所以 ∠A + 2∠A = 120°，3∠A = 120°，∠A = 40°。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s2b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：三角形的一個外角等於什麼？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2b',false)">A. 相鄰兩內角之和</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2b',true)">B. 不相鄰兩內角之和</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2b',false)">C. 三個內角之和</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2b',false)">D. 對角的兩倍</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s2b">三角形外角定理：三角形的一個外角等於不相鄰的兩個內角之和。這是由內角和 180° 推導而來的重要性質。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s2c">
+    <div class="q-text">📝 <strong>形成性評量</strong>：△ABC 中，∠A = 35°、∠B = 55°，則 ∠C 的外角為幾度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2c',false)">A. 80°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2c',true)">B. 90°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2c',false)">C. 100°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2c',false)">D. 110°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s2c">由外角定理：∠C 的外角 = ∠A + ∠B = 35° + 55° = 90°。外角等於不相鄰的兩個內角之和。</div>
   </div>
 
   <div class="card">
@@ -651,6 +774,17 @@
     <div class="q-feedback" id="fb-quiz-s3">八邊形內角和 = (8−2) × 180° = 6 × 180° = 1080°。由一個頂點畫對角線可分割成 6 個三角形。</div>
   </div>
 
+  <div class="quiz-inline" id="quiz-s3b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：十邊形的內角和為多少度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3b',false)">A. 1080°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3b',false)">B. 1260°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3b',true)">C. 1440°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3b',false)">D. 1620°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s3b">十邊形內角和 = (10−2) × 180° = 8 × 180° = 1440°。代入公式 (n−2) × 180°，其中 n = 10。</div>
+  </div>
+
   <div class="card">
     <h3>🖼️ 資訊圖表</h3>
     <div class="infographic-wrap">
@@ -712,6 +846,17 @@
     <div class="q-feedback" id="fb-quiz-s4">正五邊形的一個外角 = 360° ÷ 5 = 72°。外角和恆為 360°，正多邊形每個外角相等，所以除以邊數即可。</div>
   </div>
 
+  <div class="quiz-inline" id="quiz-s4b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：任意凸多邊形的一組外角和等於幾度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4b',false)">A. 180°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4b',false)">B. 270°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4b',true)">C. 360°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4b',false)">D. 540°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s4b">不論是幾邊形，任意凸多邊形的一組外角和恆為 360°。這個性質與邊數無關。</div>
+  </div>
+
   <div class="card">
     <h3>🖼️ 資訊圖表</h3>
     <div class="infographic-wrap">
@@ -758,6 +903,17 @@
       <button class="q-opt" onclick="checkQ(this,'quiz-s5',false)">D. 就是正多邊形</button>
     </div>
     <div class="q-feedback" id="fb-quiz-s5">凹多邊形至少有一個內角大於 180°（又稱凹角或優角），且至少有一條對角線會在多邊形外部。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s5b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：一個六邊形的其中一個內角為 210°，這個六邊形是凸多邊形還是凹多邊形？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5b',false)">A. 凸多邊形</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5b',true)">B. 凹多邊形</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5b',false)">C. 正多邊形</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5b',false)">D. 無法判斷</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s5b">因為有一個內角 210° 大於 180°，所以這個六邊形是凹多邊形。凸多邊形的每一個內角都必須小於 180°。</div>
   </div>
 
   <div class="card">
@@ -809,6 +965,17 @@
       <button class="q-opt" onclick="checkQ(this,'quiz-s6',false)">D. 156°</button>
     </div>
     <div class="q-feedback" id="fb-quiz-s6">正十二邊形的每一個外角 = 360° ÷ 12 = 30°，每一個內角 = 180° − 30° = 150°。達人捷徑：先算外角再用互補求內角！</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s6b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：正六邊形的每一個內角是幾度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6b',false)">A. 100°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6b',true)">B. 120°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6b',false)">C. 135°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6b',false)">D. 150°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s6b">正六邊形的每一個外角 = 360° ÷ 6 = 60°，每一個內角 = 180° − 60° = 120°。也可以用公式 (6−2) × 180° ÷ 6 = 720° ÷ 6 = 120°。</div>
   </div>
 
   <div class="card">
@@ -1884,6 +2051,24 @@ document.querySelectorAll('.topic-pill[href]').forEach(a => {
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
+
+/* ── Canvas 響應式 resize handler ── */
+function resizeCanvases() {
+  document.querySelectorAll('.interactive-area canvas').forEach(cv => {
+    const parent = cv.parentElement;
+    const w = Math.min(parent.clientWidth - 32, 500);
+    cv.width = w;
+    cv.height = Math.round(w * 0.64);
+  });
+  // 重繪所有 canvas
+  drawTri();
+  drawExterior();
+  drawPolygonSum();
+  drawExteriorSum();
+  drawConvexConcave(document.querySelector('#cv5').closest('.card').querySelector('.ctrl-btn.active')?.textContent === '凸多邊形');
+  drawRegular();
+}
+window.addEventListener('resize', resizeCanvases);
 </script>
 </body>
 </html>
