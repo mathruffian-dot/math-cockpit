@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>國中數學教學駕駛艙</title>
+  <style>
+    :root { --board: #1a2a1a; --chalk: #e8e4d8; --yellow: #ffd54f; --blue: #81d4fa; --wood: #8d6e4a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; background: var(--board); color: var(--chalk); min-height: 100vh; }
+    header { background: linear-gradient(180deg, #a8875a 0%, var(--wood) 40%, #5d4530 100%); padding: 24px; text-align: center; border-bottom: 3px solid #3a2a1a; }
+    header h1 { font-size: 1.5rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+    header p { font-size: 0.85rem; opacity: 0.8; margin-top: 6px; }
+    .container { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+    .unit-card {
+      display: block; background: #243524; border: 2px solid rgba(232,228,216,0.2);
+      border-radius: 12px; padding: 20px; margin-bottom: 16px;
+      text-decoration: none; color: var(--chalk);
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+      transition: border-color 0.2s, transform 0.1s;
+    }
+    .unit-card:hover { border-color: var(--yellow); transform: translateY(-2px); }
+    .unit-card h2 { font-size: 1.1rem; color: var(--yellow); margin-bottom: 6px; }
+    .unit-card p { font-size: 0.85rem; color: #a8a498; }
+    .unit-card .badge { display: inline-block; background: rgba(129,212,250,0.15); border: 1px solid var(--blue); color: var(--blue); border-radius: 20px; padding: 2px 10px; font-size: 0.72rem; margin-top: 8px; }
+    footer { text-align: center; padding: 20px; font-size: 0.75rem; color: #666; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📐 國中數學教學駕駛艙</h1>
+    <p>互動式黑板粉筆風格教學平台</p>
+  </header>
+  <div class="container">
+    <a class="unit-card" href="3-1-triangles-polygons/index.html">
+      <h2>📐 3-1 三角形與多邊形的內角與外角</h2>
+      <p>三角形內角和、外角定理、多邊形內角和公式、外角和 360°、凸凹多邊形、正多邊形內角計算</p>
+      <span class="badge">八年級下學期</span>
+      <span class="badge">第 3 章</span>
+    </a>
+    <!-- 未來新增的單元放這裡 -->
+  </div>
+  <footer>Powered by NotebookLM + Claude Code</footer>
+</body>
+</html>

@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3-1 三角形與多邊形的內角與外角｜教學駕駛艙</title>
+  <style>
+    :root {
+      --board: #1a2a1a;
+      --board-light: #243524;
+      --chalk: #e8e4d8;
+      --chalk-dim: #a8a498;
+      --yellow: #ffd54f;
+      --pink: #ff8a80;
+      --blue: #81d4fa;
+      --green: #a5d6a7;
+      --orange: #ffb74d;
+      --wood: #8d6e4a;
+      --wood-dark: #5d4530;
+      --wood-light: #a8875a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--board);
+      color: var(--chalk);
+      min-height: 100vh;
+    }
+
+    /* ── Header (木框風格) ── */
+    header {
+      background: linear-gradient(180deg, var(--wood-light) 0%, var(--wood) 40%, var(--wood-dark) 100%);
+      color: var(--chalk);
+      padding: 18px 24px 14px;
+      position: sticky; top: 0; z-index: 200;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      border-bottom: 3px solid #3a2a1a;
+    }
+    header h1 { font-size: 1.3rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+    header .meta { font-size: 0.78rem; opacity: 0.85; margin-top: 4px; }
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.72rem;
+      margin-right: 6px;
+    }
+
+    /* ── Mode bar ── */
+    .mode-bar {
+      background: #0d1a0d;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 24px; font-size: 0.8rem; color: var(--chalk-dim);
+      border-bottom: 1px solid #2a3a2a;
+    }
+    .mode-btn {
+      background: var(--yellow); color: #1a1a1a; border: none;
+      border-radius: 20px; padding: 5px 16px; font-size: 0.78rem;
+      cursor: pointer; font-family: inherit; font-weight: 600;
+    }
+    .mode-btn:hover { opacity: 0.85; }
+
+    /* ── Main layout ── */
+    .main-wrap { display: flex; min-height: calc(100vh - 100px); }
+    .container {
+      flex: 1; max-width: 1000px; margin: 0 auto; padding: 20px 20px 60px;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.05rem; font-weight: 700; color: var(--yellow);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px dashed var(--yellow);
+      text-shadow: 0 0 8px rgba(255,213,79,0.3);
+    }
+    .section-title .icon { font-size: 1.2rem; }
+
+    /* ── Cards (粉筆框) ── */
+    .card {
+      background: var(--board-light);
+      border: 2px solid rgba(232,228,216,0.2);
+      border-radius: 12px; padding: 18px; margin-bottom: 16px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .card h3 { font-size: 0.95rem; margin-bottom: 10px; color: var(--blue); }
+
+    /* ── Objective chips ── */
+    .obj-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .obj-chip {
+      background: rgba(255,213,79,0.1);
+      border: 1px dashed var(--yellow);
+      border-radius: 8px; padding: 6px 12px; font-size: 0.82rem; color: var(--yellow);
+    }
+    .obj-chip .num {
+      background: var(--yellow); color: #1a1a1a;
+      border-radius: 50%; width: 20px; height: 20px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; margin-right: 6px;
+    }
+
+    /* ── Topic flow ── */
+    .topic-flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .topic-pill {
+      background: rgba(129,212,250,0.2); border: 1px solid var(--blue);
+      color: var(--blue); border-radius: 20px; padding: 6px 14px; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .topic-pill:hover, .topic-pill.active { background: var(--blue); color: #1a1a1a; }
+    .topic-arrow { color: var(--chalk-dim); font-size: 1rem; }
+
+    /* ── Slide Viewer (手動翻頁) ── */
+    .carousel {
+      position: relative; border-radius: 10px;
+      border: 2px solid rgba(232,228,216,0.15);
+      background: #0d1a0d; margin-bottom: 12px;
+    }
+    .carousel-inner {
+      position: relative;
+    }
+    .carousel-inner img {
+      width: 100%; height: auto; max-height: 500px;
+      object-fit: contain; display: none;
+      cursor: pointer; border-radius: 8px;
+    }
+    .carousel-inner img.active { display: block; }
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(0,0,0,0.6); color: white; border: none;
+      width: 36px; height: 36px; border-radius: 50%;
+      font-size: 1.2rem; cursor: pointer; z-index: 5;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .carousel-btn:hover { background: rgba(0,0,0,0.85); }
+    .carousel-btn.prev { left: 8px; }
+    .carousel-btn.next { right: 8px; }
+    .carousel-dots {
+      display: flex; justify-content: center; gap: 6px;
+      padding: 8px 0;
+    }
+    .carousel-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--chalk-dim); border: none; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .carousel-dot.active { background: var(--yellow); transform: scale(1.3); }
+
+    /* ── Fullscreen overlay ── */
+    .fullscreen-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.92); z-index: 500;
+      align-items: center; justify-content: center; cursor: pointer;
+    }
+    .fullscreen-overlay.show { display: flex; }
+    .fullscreen-overlay img { max-width: 95%; max-height: 90vh; border-radius: 8px; }
+
+    /* ── Interactive canvas area ── */
+    .interactive-area {
+      background: var(--board); border: 2px solid rgba(232,228,216,0.15);
+      border-radius: 10px; padding: 16px; margin-bottom: 12px;
+    }
+    .interactive-area canvas {
+      display: block; margin: 0 auto; border-radius: 8px;
+      background: var(--board); max-width: 100%;
+    }
+    .interactive-area .controls {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+      justify-content: center;
+    }
+    .ctrl-btn {
+      background: rgba(129,212,250,0.15); border: 1px solid var(--blue);
+      color: var(--blue); border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; font-family: inherit;
+      transition: all 0.2s;
+    }
+    .ctrl-btn:hover { background: var(--blue); color: #1a1a1a; }
+    .ctrl-btn.active { background: var(--blue); color: #1a1a1a; }
+    .result-display {
+      text-align: center; font-size: 1.1rem; font-weight: 700;
+      color: var(--yellow); margin: 10px 0;
+      text-shadow: 0 0 6px rgba(255,213,79,0.3);
+    }
+
+    /* ── Slider ── */
+    .slider-row {
+      display: flex; align-items: center; gap: 12px;
+      margin: 10px auto; max-width: 400px;
+    }
+    .slider-row label { font-size: 0.9rem; color: var(--blue); min-width: 40px; }
+    input[type=range] {
+      flex: 1; min-width: 100px;
+      accent-color: var(--yellow);
+    }
+    .slider-val {
+      background: var(--yellow); color: #1a1a1a; font-weight: 700;
+      border-radius: 6px; padding: 2px 10px; font-size: 0.9rem;
+      min-width: 36px; text-align: center;
+    }
+
+    /* ── Formative assessment ── */
+    .quiz-inline {
+      background: rgba(255,138,128,0.08);
+      border: 1px dashed var(--pink);
+      border-radius: 10px; padding: 14px; margin: 12px 0;
+    }
+    .quiz-inline .q-text { font-size: 0.9rem; margin-bottom: 10px; line-height: 1.7; }
+    .quiz-inline .q-text strong { color: var(--yellow); }
+    .q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .q-opt {
+      background: rgba(232,228,216,0.05);
+      border: 2px solid rgba(232,228,216,0.2);
+      border-radius: 8px; padding: 10px 14px; font-size: 0.85rem;
+      cursor: pointer; text-align: left; font-family: inherit;
+      color: var(--chalk); transition: all 0.2s;
+    }
+    .q-opt:hover { border-color: var(--blue); background: rgba(129,212,250,0.1); }
+    .q-opt.correct { border-color: var(--green); background: rgba(165,214,167,0.15); color: var(--green); }
+    .q-opt.wrong { border-color: var(--pink); background: rgba(255,138,128,0.1); color: var(--pink); }
+    .q-feedback {
+      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      font-size: 0.85rem; display: none; line-height: 1.6;
+    }
+    .q-feedback.show { display: block; }
+    .q-feedback.correct-fb { background: rgba(165,214,167,0.1); color: var(--green); border: 1px solid rgba(165,214,167,0.3); }
+    .q-feedback.wrong-fb { background: rgba(255,138,128,0.1); color: var(--pink); border: 1px solid rgba(255,138,128,0.3); }
+
+    /* ── Infographic ── */
+    .infographic-wrap {
+      border-radius: 10px; overflow: hidden;
+      border: 2px solid rgba(232,228,216,0.1);
+    }
+    .infographic-wrap img {
+      width: 100%; height: auto; display: block; cursor: pointer;
+    }
+
+    /* ── Video section ── */
+    .video-wrap {
+      border-radius: 10px; overflow: hidden;
+      border: 2px solid rgba(232,228,216,0.15);
+      background: #000;
+    }
+    .video-wrap video { width: 100%; display: block; }
+    .yt-placeholder {
+      background: rgba(129,212,250,0.08);
+      border: 2px dashed var(--blue);
+      border-radius: 10px; padding: 20px; text-align: center;
+      color: var(--blue); margin-top: 12px;
+    }
+    .yt-placeholder input {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--blue);
+      color: var(--chalk); border-radius: 8px; padding: 8px 14px;
+      font-size: 0.85rem; width: 80%; max-width: 400px;
+      margin-top: 8px; font-family: inherit;
+    }
+
+    /* ── Teacher-only content ── */
+    .teacher-only { display: none; }
+    body.teacher-mode .teacher-only { display: block; }
+    .teacher-note {
+      background: rgba(255,183,77,0.08);
+      border: 1px dashed var(--orange);
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 0.85rem; line-height: 1.7; margin: 10px 0;
+    }
+    .teacher-note h4 { color: var(--orange); margin-bottom: 8px; }
+    .teacher-note ul { padding-left: 18px; }
+    .teacher-note li { margin-bottom: 4px; color: var(--chalk-dim); }
+
+    /* ── Floating tool panel ── */
+    .tool-panel {
+      position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+      z-index: 300; display: flex; flex-direction: column; align-items: flex-end;
+    }
+    .tool-toggle {
+      background: var(--wood); color: var(--chalk); border: none;
+      border-radius: 8px 0 0 8px; padding: 10px 8px;
+      font-size: 0.8rem; cursor: pointer; font-family: inherit;
+      writing-mode: vertical-rl; letter-spacing: 2px;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.3);
+    }
+    .tool-toggle:hover { background: var(--wood-light); }
+    .tool-drawer {
+      background: linear-gradient(180deg, #2a1a0a, #1a1008);
+      border: 2px solid var(--wood);
+      border-right: none; border-radius: 12px 0 0 12px;
+      width: 240px; padding: 16px;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+      max-height: 80vh; overflow-y: auto;
+      display: none;
+    }
+    .tool-drawer.open { display: block; }
+    .tool-drawer h4 {
+      color: var(--yellow); font-size: 0.85rem;
+      margin: 14px 0 8px; padding-bottom: 4px;
+      border-bottom: 1px dashed var(--wood);
+    }
+    .tool-drawer h4:first-child { margin-top: 0; }
+
+    /* Timer in panel */
+    .panel-timer {
+      font-size: 2rem; font-weight: 700; text-align: center;
+      color: var(--yellow); font-variant-numeric: tabular-nums; margin: 8px 0;
+    }
+    .panel-timer.warning { color: var(--pink); animation: pulse 0.5s infinite alternate; }
+    @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+    .panel-btns { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+    .panel-btn {
+      background: rgba(232,228,216,0.1); border: 1px solid var(--chalk-dim);
+      color: var(--chalk); border-radius: 6px; padding: 5px 10px;
+      font-size: 0.75rem; cursor: pointer; font-family: inherit;
+    }
+    .panel-btn:hover { background: rgba(232,228,216,0.2); }
+    .panel-btn.primary { background: var(--yellow); color: #1a1a1a; border-color: var(--yellow); }
+    .panel-btn.danger { background: var(--pink); color: #1a1a1a; border-color: var(--pink); }
+
+    /* Picker in panel */
+    .panel-picker {
+      font-size: 1.5rem; font-weight: 700; text-align: center;
+      color: var(--blue); min-height: 50px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pick-main-btn {
+      display: block; width: 100%; background: var(--yellow); color: #1a1a1a;
+      border: none; border-radius: 8px; padding: 10px;
+      font-size: 0.9rem; cursor: pointer; font-weight: 700;
+      margin-top: 6px; font-family: inherit;
+    }
+
+    /* Drawing overlay */
+    .draw-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 400; display: none; cursor: crosshair;
+    }
+    .draw-overlay.active { display: block; }
+    .draw-toolbar {
+      position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
+      z-index: 401; background: rgba(42,26,10,0.95);
+      border: 2px solid var(--wood); border-radius: 12px;
+      padding: 12px 10px; display: none;
+      flex-direction: column; gap: 8px; align-items: center;
+    }
+    .draw-toolbar.active { display: flex; }
+    .color-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid transparent; cursor: pointer;
+    }
+    .color-dot.active { border-color: white; box-shadow: 0 0 6px white; }
+    .draw-close {
+      background: var(--pink); color: #1a1a1a; border: none;
+      border-radius: 8px; padding: 6px 14px; font-size: 0.8rem;
+      cursor: pointer; font-family: inherit; font-weight: 700;
+    }
+
+    /* ── Cheat sheet ── */
+    .cheat-sheet {
+      background: rgba(255,213,79,0.05);
+      border: 2px solid var(--yellow);
+      border-radius: 12px; padding: 20px;
+    }
+    .cheat-sheet h3 { color: var(--yellow); text-align: center; margin-bottom: 14px; }
+    .formula-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px dashed rgba(232,228,216,0.1);
+      font-size: 0.9rem;
+    }
+    .formula-row .f-label { color: var(--blue); min-width: 160px; }
+    .formula-row .f-value { color: var(--yellow); font-weight: 700; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .container { padding: 12px 10px 40px; }
+      header h1 { font-size: 1.05rem; }
+      .q-options { grid-template-columns: 1fr; }
+      .tool-drawer { width: 200px; }
+    }
+
+    /* ── Floating draw button (左側) ── */
+    .draw-fab {
+      position: fixed; bottom: 24px; left: 24px; z-index: 350;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--wood-light), var(--wood));
+      color: var(--chalk); border: 3px solid var(--wood-dark);
+      font-size: 1.5rem; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .draw-fab:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
+    .draw-fab.active-draw { background: var(--pink); border-color: #c62828; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--board); }
+    ::-webkit-scrollbar-thumb { background: var(--wood); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <h1>📐 3-1 三角形與多邊形的內角與外角 — 教學駕駛艙</h1>
+  <div class="meta">
+    <span class="badge">八年級下學期</span>
+    <span class="badge">第 3 章 三角形的基本性質</span>
+    <span class="badge">S-8-1 / S-8-2 / S-8-8</span>
+  </div>
+</header>
+
+<!-- Mode bar -->
+<div class="mode-bar">
+  <span id="mode-label">👨‍🎓 學生模式</span>
+  <button class="mode-btn" onclick="toggleMode()">🔑 切換教師模式</button>
+</div>
+
+<!-- Fullscreen overlay -->
+<div class="fullscreen-overlay" id="fsOverlay" onclick="closeFull()">
+  <img id="fsImg" src="" alt="">
+</div>
+
+<div class="main-wrap">
+<div class="container">
+
+  <!-- ── 學習目標 ── -->
+  <div class="section-title"><span class="icon">🎯</span>學習目標</div>
+  <div class="card">
+    <div class="obj-grid">
+      <div class="obj-chip"><span class="num">1</span>理解互餘、互補與對頂角的關係</div>
+      <div class="obj-chip"><span class="num">2</span>能應用三角形內角和為 180° 求未知角</div>
+      <div class="obj-chip"><span class="num">3</span>能理解並運用三角形外角定理</div>
+      <div class="obj-chip"><span class="num">4</span>能推導 n 邊形內角和公式 (n−2)×180°</div>
+      <div class="obj-chip"><span class="num">5</span>能區分凸多邊形與凹多邊形</div>
+      <div class="obj-chip"><span class="num">6</span>能計算正 n 邊形的每一個內角與外角</div>
+    </div>
+  </div>
+
+  <!-- Teacher note -->
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>📋 教師備忘｜教學流程建議（45 分鐘）</h4>
+      <ul>
+        <li><strong>0–5 min</strong>：情境引入（蜂巢正六邊形），引起學生好奇心</li>
+        <li><strong>5–15 min</strong>：重點1 三角形內角和（摺紙活動+例題）</li>
+        <li><strong>15–22 min</strong>：重點2 外角定理（繞行概念+快速解題法）</li>
+        <li><strong>22–30 min</strong>：重點3 多邊形內角和（對角線分割探索）</li>
+        <li><strong>30–35 min</strong>：重點4-5 外角和360°+凸凹多邊形</li>
+        <li><strong>35–42 min</strong>：重點6 正多邊形內角計算+英鎊硬幣例題</li>
+        <li><strong>42–45 min</strong>：總結 Cheat Sheet + 回應蜂巢之謎</li>
+      </ul>
+      <p style="margin-top:8px;color:var(--orange);font-size:0.8rem;">⚠️ 注意：課綱備註「不處理多邊形外角和公式」，但可用繞行概念帶過。</p>
+    </div>
+  </div>
+
+  <!-- ── 主題導覽 ── -->
+  <div class="section-title"><span class="icon">🗺️</span>單元主題導覽</div>
+  <div class="card">
+    <div class="topic-flow">
+      <a class="topic-pill" href="#sec1">① 三角形內角和</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec2">② 外角定理</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec3">③ 多邊形內角和</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec4">④ 外角和 360°</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec5">⑤ 凸凹多邊形</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec6">⑥ 正多邊形</a>
+    </div>
+  </div>
+
+  <!-- ── 開場簡報 ── -->
+  <div class="section-title"><span class="icon">🎬</span>開場引入</div>
+  <div class="carousel" id="car-intro">
+    <div class="carousel-inner">
+      <img src="assets/slide_01.jpg" alt="標題" loading="lazy" onclick="openFull(this)">
+      <img src="assets/slide_02.jpg" alt="蜂巢情境" loading="lazy" onclick="openFull(this)">
+      <img src="assets/slide_03.jpg" alt="基礎回顧" loading="lazy" onclick="openFull(this)">
+    </div>
+    <button class="carousel-btn prev" onclick="carPrev('car-intro')">‹</button>
+    <button class="carousel-btn next" onclick="carNext('car-intro')">›</button>
+    <div class="carousel-dots" id="dots-car-intro"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 1：三角形內角和 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec1"></div>
+  <div class="section-title"><span class="icon">📐</span>重點 1：三角形內角和為 180°</div>
+
+  <!-- 簡報輪播 -->
+  <div class="card">
+    <h3>📖 簡報講義</h3>
+    <div class="carousel" id="car-s1">
+      <div class="carousel-inner">
+        <img src="assets/slide_04.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_05.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_06.jpg" alt="" loading="lazy" onclick="openFull(this)">
+      </div>
+      <button class="carousel-btn prev" onclick="carPrev('car-s1')">‹</button>
+      <button class="carousel-btn next" onclick="carNext('car-s1')">›</button>
+      <div class="carousel-dots" id="dots-car-s1"></div>
+    </div>
+  </div>
+
+  <!-- 互動視覺化 -->
+  <div class="card">
+    <h3>🧪 互動探索：拖動頂點觀察角度</h3>
+    <div class="interactive-area">
+      <canvas id="cv1" width="500" height="320"></canvas>
+      <div class="result-display" id="res1">∠A + ∠B + ∠C = 180°</div>
+      <p style="text-align:center;font-size:0.78rem;color:var(--chalk-dim);">拖動三角形的頂點，觀察三個角的和永遠是 180°</p>
+    </div>
+  </div>
+
+  <!-- 形成性評量 -->
+  <div class="quiz-inline" id="quiz-s1">
+    <div class="q-text">📝 <strong>形成性評量</strong>：△ABC 中，若 ∠A = 45°、∠B = 70°，則 ∠C = ？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1',false)">A. 55°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1',true)">B. 65°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1',false)">C. 75°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1',false)">D. 85°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s1">∠C = 180° − 45° − 70° = 65°。三角形內角和為 180°，所以第三個角用 180° 減去已知的兩角即可。</div>
+  </div>
+
+  <!-- 資訊圖表 -->
+  <div class="card">
+    <h3>🖼️ 資訊圖表</h3>
+    <div class="infographic-wrap">
+      <img src="assets/01_三角形內角和.jpg" alt="三角形內角和" loading="lazy" onclick="openFull(this)">
+    </div>
+  </div>
+
+  <!-- 教師備忘 -->
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>可搭配附件摺紙活動，讓學生將三角形三個角摺到同一直線上</li>
+        <li>強調：內角和的成立與邊長無關，僅與角度有關</li>
+        <li>常見錯誤：學生容易忘記「180° 減兩角」的步驟</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 2：三角形外角定理 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec2"></div>
+  <div class="section-title"><span class="icon">📐</span>重點 2：三角形外角定理</div>
+
+  <div class="card">
+    <h3>📖 簡報講義</h3>
+    <div class="carousel" id="car-s2">
+      <div class="carousel-inner">
+        <img src="assets/slide_07.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_08.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_09.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_10.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_11.jpg" alt="" loading="lazy" onclick="openFull(this)">
+      </div>
+      <button class="carousel-btn prev" onclick="carPrev('car-s2')">‹</button>
+      <button class="carousel-btn next" onclick="carNext('car-s2')">›</button>
+      <div class="carousel-dots" id="dots-car-s2"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：外角 = 不相鄰兩內角之和</h3>
+    <div class="interactive-area">
+      <canvas id="cv2" width="500" height="320"></canvas>
+      <div class="result-display" id="res2">外角 = ∠A + ∠B</div>
+      <p style="text-align:center;font-size:0.78rem;color:var(--chalk-dim);">拖動頂點觀察外角與不相鄰內角的關係</p>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s2">
+    <div class="q-text">📝 <strong>形成性評量</strong>：△ABC 中，∠B 的外角為 120°，且 ∠C = 2∠A，則 ∠A = ？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2',true)">A. 40°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2',false)">B. 50°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2',false)">C. 60°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2',false)">D. 80°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s2">由外角定理：∠A + ∠C = 120°。因為 ∠C = 2∠A，所以 ∠A + 2∠A = 120°，3∠A = 120°，∠A = 40°。</div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ 資訊圖表</h3>
+    <div class="infographic-wrap">
+      <img src="assets/02_三角形外角定理.jpg" alt="三角形外角定理" loading="lazy" onclick="openFull(this)">
+    </div>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>外角定理是解題捷徑：不需先算第三個內角，直接用兩個不相鄰內角的和</li>
+        <li>用繞行三角形公園的情境引入「外角」概念最直觀</li>
+        <li>常見錯誤：把「相鄰內角」和「不相鄰內角」搞混</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 3：多邊形內角和 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec3"></div>
+  <div class="section-title"><span class="icon">📐</span>重點 3：多邊形內角和公式</div>
+
+  <div class="card">
+    <h3>📖 簡報講義</h3>
+    <div class="carousel" id="car-s3">
+      <div class="carousel-inner">
+        <img src="assets/slide_13.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_14.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_15.jpg" alt="" loading="lazy" onclick="openFull(this)">
+      </div>
+      <button class="carousel-btn prev" onclick="carPrev('car-s3')">‹</button>
+      <button class="carousel-btn next" onclick="carNext('car-s3')">›</button>
+      <div class="carousel-dots" id="dots-car-s3"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：n 邊形內角和</h3>
+    <div class="interactive-area">
+      <canvas id="cv3" width="500" height="340"></canvas>
+      <div class="slider-row">
+        <label>n =</label>
+        <input type="range" id="slider-n3" min="3" max="12" step="1" value="5" oninput="drawPolygonSum()">
+        <div class="slider-val" id="val-n3">5</div>
+      </div>
+      <div class="result-display" id="res3">內角和 = (5−2) × 180° = 540°</div>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s3">
+    <div class="q-text">📝 <strong>形成性評量</strong>：八邊形的內角和為多少度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3',false)">A. 900°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3',true)">B. 1080°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3',false)">C. 1260°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3',false)">D. 1440°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s3">八邊形內角和 = (8−2) × 180° = 6 × 180° = 1080°。由一個頂點畫對角線可分割成 6 個三角形。</div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ 資訊圖表</h3>
+    <div class="infographic-wrap">
+      <img src="assets/03_多邊形內角和公式.jpg" alt="多邊形內角和公式" loading="lazy" onclick="openFull(this)">
+    </div>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>引導學生「由一個頂點畫對角線」的探索方式來推導公式</li>
+        <li>可用表格整理 n=3~7 的對角線數、三角形數、內角和</li>
+        <li>注意動動腦：從內部一點分割的三角形數 ≠ (n-2)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 4：外角和 360° -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec4"></div>
+  <div class="section-title"><span class="icon">📐</span>重點 4：外角和恆為 360°</div>
+
+  <div class="card">
+    <h3>📖 簡報講義</h3>
+    <div class="carousel" id="car-s4">
+      <div class="carousel-inner">
+        <img src="assets/slide_16.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_17.jpg" alt="" loading="lazy" onclick="openFull(this)">
+      </div>
+      <button class="carousel-btn prev" onclick="carPrev('car-s4')">‹</button>
+      <button class="carousel-btn next" onclick="carNext('car-s4')">›</button>
+      <div class="carousel-dots" id="dots-car-s4"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：外角和 = 360°</h3>
+    <div class="interactive-area">
+      <canvas id="cv4" width="500" height="340"></canvas>
+      <div class="slider-row">
+        <label>n =</label>
+        <input type="range" id="slider-n4" min="3" max="10" step="1" value="5" oninput="drawExteriorSum()">
+        <div class="slider-val" id="val-n4">5</div>
+      </div>
+      <div class="result-display" id="res4">n 邊形的一組外角和 = 360°</div>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s4">
+    <div class="q-text">📝 <strong>形成性評量</strong>：正五邊形的一個外角為多少度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4',false)">A. 60°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4',true)">B. 72°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4',false)">C. 108°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4',false)">D. 120°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s4">正五邊形的一個外角 = 360° ÷ 5 = 72°。外角和恆為 360°，正多邊形每個外角相等，所以除以邊數即可。</div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ 資訊圖表</h3>
+    <div class="infographic-wrap">
+      <img src="assets/04_外角和360度.jpg" alt="外角和360度" loading="lazy" onclick="openFull(this)">
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 5：凸凹多邊形 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec5"></div>
+  <div class="section-title"><span class="icon">📐</span>重點 5：凸多邊形與凹多邊形</div>
+
+  <div class="card">
+    <h3>📖 簡報講義</h3>
+    <div class="carousel" id="car-s5">
+      <div class="carousel-inner">
+        <img src="assets/slide_12.jpg" alt="" loading="lazy" onclick="openFull(this)">
+      </div>
+      <button class="carousel-btn prev" onclick="carPrev('car-s5')">‹</button>
+      <button class="carousel-btn next" onclick="carNext('car-s5')">›</button>
+      <div class="carousel-dots" id="dots-car-s5"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：凸 vs 凹</h3>
+    <div class="interactive-area">
+      <canvas id="cv5" width="500" height="300"></canvas>
+      <div class="controls">
+        <button class="ctrl-btn active" onclick="setConvex(true,this)">凸多邊形</button>
+        <button class="ctrl-btn" onclick="setConvex(false,this)">凹多邊形</button>
+      </div>
+      <div class="result-display" id="res5">凸多邊形：所有內角 < 180°</div>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s5">
+    <div class="q-text">📝 <strong>形成性評量</strong>：下列關於凹多邊形的敘述，何者正確？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5',false)">A. 所有內角都小於 180°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5',true)">B. 至少有一個內角大於 180°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5',false)">C. 所有對角線都在多邊形內</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5',false)">D. 就是正多邊形</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s5">凹多邊形至少有一個內角大於 180°（又稱凹角或優角），且至少有一條對角線會在多邊形外部。</div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ 資訊圖表</h3>
+    <div class="infographic-wrap">
+      <img src="assets/05_凸多邊形與凹多邊形.jpg" alt="凸凹多邊形" loading="lazy" onclick="openFull(this)">
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 6：正多邊形的單一內角 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec6"></div>
+  <div class="section-title"><span class="icon">📐</span>重點 6：正多邊形的單一內角計算</div>
+
+  <div class="card">
+    <h3>📖 簡報講義</h3>
+    <div class="carousel" id="car-s6">
+      <div class="carousel-inner">
+        <img src="assets/slide_18.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_19.jpg" alt="" loading="lazy" onclick="openFull(this)">
+        <img src="assets/slide_20.jpg" alt="" loading="lazy" onclick="openFull(this)">
+      </div>
+      <button class="carousel-btn prev" onclick="carPrev('car-s6')">‹</button>
+      <button class="carousel-btn next" onclick="carNext('car-s6')">›</button>
+      <div class="carousel-dots" id="dots-car-s6"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：正 n 邊形角度計算</h3>
+    <div class="interactive-area">
+      <canvas id="cv6" width="500" height="340"></canvas>
+      <div class="slider-row">
+        <label>n =</label>
+        <input type="range" id="slider-n6" min="3" max="12" step="1" value="6" oninput="drawRegular()">
+        <div class="slider-val" id="val-n6">6</div>
+      </div>
+      <div class="result-display" id="res6">正六邊形：內角 = 120°、外角 = 60°</div>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s6">
+    <div class="q-text">📝 <strong>形成性評量</strong>：英國新版 1 英鎊硬幣為正十二邊形，它的每一個內角為多少度？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6',false)">A. 140°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6',false)">B. 144°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6',true)">C. 150°</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6',false)">D. 156°</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s6">正十二邊形的每一個外角 = 360° ÷ 12 = 30°，每一個內角 = 180° − 30° = 150°。達人捷徑：先算外角再用互補求內角！</div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ 資訊圖表</h3>
+    <div class="infographic-wrap">
+      <img src="assets/06_正多邊形內角計算.jpg" alt="正多邊形內角" loading="lazy" onclick="openFull(this)">
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 總結 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="section-title"><span class="icon">🏆</span>總結 Cheat Sheet</div>
+  <div class="card">
+    <div class="carousel" id="car-end">
+      <div class="carousel-inner">
+        <img src="assets/slide_21.jpg" alt="總結" loading="lazy" onclick="openFull(this)">
+      </div>
+    </div>
+  </div>
+
+  <div class="cheat-sheet">
+    <h3>Master's Cheat Sheet（重點總結）</h3>
+    <div class="formula-row"><span class="f-label">三角形內角和</span><span class="f-value">∠A + ∠B + ∠C = 180°</span></div>
+    <div class="formula-row"><span class="f-label">三角形外角定理</span><span class="f-value">外角 = 不相鄰兩內角之和</span></div>
+    <div class="formula-row"><span class="f-label">三角形外角和</span><span class="f-value">一組外角和 = 360°</span></div>
+    <div class="formula-row"><span class="f-label">n 邊形內角和</span><span class="f-value">(n − 2) × 180°</span></div>
+    <div class="formula-row"><span class="f-label">n 邊形外角和</span><span class="f-value">360°（恆等）</span></div>
+    <div class="formula-row"><span class="f-label">正 n 邊形單一內角</span><span class="f-value">(n−2)×180° ÷ n = 180° − 360°/n</span></div>
+    <div class="formula-row" style="border:none;"><span class="f-label">正 n 邊形單一外角</span><span class="f-value">360° ÷ n</span></div>
+  </div>
+
+  <!-- ── 影片區 ── -->
+  <div class="section-title"><span class="icon">🎥</span>學生自學影片</div>
+  <div class="video-wrap">
+    <video controls preload="none" poster="assets/slide_01.jpg">
+      <source src="影片概覽_學生自學.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- YouTube 預留欄位 -->
+  <div class="yt-placeholder" id="yt-section">
+    <div id="yt-player">
+      <iframe width="100%" height="400" style="border-radius:8px;" src="https://www.youtube.com/embed/m_BNliA54ow" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- 教師常見錯誤總覽 -->
+  <div class="teacher-only">
+    <div class="section-title"><span class="icon">📊</span>常見錯誤分析</div>
+    <div class="teacher-note">
+      <h4>📊 教師｜學生常見錯誤</h4>
+      <ul>
+        <li>誤以為「兩角必須在直角內」才算互餘（其實只要和為 90° 即可）</li>
+        <li>誤以為「兩角必須在平角內」才算互補</li>
+        <li>對頂角：誤以為共用頂點就是對頂角（需「兩直線交於一點」且不相鄰）</li>
+        <li>外角定理：把「相鄰內角」和「不相鄰內角」搞混</li>
+        <li>多邊形內角和：從內部一點分割時三角形數量計算錯誤</li>
+        <li>「正」六邊形才是每個內角 120°，一般六邊形不一定</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- NotebookLM 連結 -->
+  <div class="teacher-only" style="margin-top:16px;">
+    <div class="card">
+      <h3>🔗 資源連結</h3>
+      <a href="https://notebooklm.google.com/notebook/24277fb2-3b9c-441b-a1e3-1c8654323fa2" target="_blank"
+         style="color:var(--blue);font-size:0.85rem;">📓 NotebookLM 筆記本</a>
+    </div>
+  </div>
+
+</div><!-- /container -->
+</div><!-- /main-wrap -->
+
+<!-- ── 浮動工具面板 ── -->
+<div class="tool-panel" id="toolPanel">
+  <div style="display:flex;align-items:flex-start;">
+    <div class="tool-drawer" id="toolDrawer">
+
+      <!-- 抽籤器 -->
+      <h4>🎲 抽籤器</h4>
+      <div style="display:flex;gap:4px;align-items:center;margin-bottom:6px;">
+        <label style="font-size:0.72rem;color:var(--chalk-dim);white-space:nowrap;">座號</label>
+        <input type="number" id="seat-start" value="1" min="1" max="99"
+          style="width:42px;background:rgba(0,0,0,0.3);border:1px solid var(--chalk-dim);color:var(--chalk);border-radius:4px;padding:3px 4px;font-size:0.78rem;text-align:center;">
+        <span style="font-size:0.72rem;color:var(--chalk-dim);">~</span>
+        <input type="number" id="seat-end" value="30" min="1" max="99"
+          style="width:42px;background:rgba(0,0,0,0.3);border:1px solid var(--chalk-dim);color:var(--chalk);border-radius:4px;padding:3px 4px;font-size:0.78rem;text-align:center;">
+        <button class="panel-btn" style="font-size:0.7rem;padding:3px 8px;" onclick="applySeatRange()">套用</button>
+      </div>
+      <div class="panel-picker" id="picker-disp">—</div>
+      <div style="text-align:center;font-size:0.72rem;color:var(--chalk-dim);margin:2px 0;" id="pick-count"></div>
+      <button class="pick-main-btn" onclick="pickStudent()">🎲 抽一位同學</button>
+      <button class="panel-btn" style="width:100%;margin-top:4px;" onclick="resetPicker()">重設</button>
+
+      <!-- 計時器 -->
+      <h4>⏱️ 計時器</h4>
+      <div class="panel-timer" id="timer-disp">05:00</div>
+      <div class="panel-btns">
+        <button class="panel-btn primary" onclick="startTimer()">開始</button>
+        <button class="panel-btn" onclick="pauseTimer()">暫停</button>
+        <button class="panel-btn danger" onclick="resetTimer()">重設</button>
+      </div>
+      <div class="panel-btns" style="margin-top:4px;">
+        <button class="panel-btn" onclick="setTimerMin(1)">1分</button>
+        <button class="panel-btn" onclick="setTimerMin(3)">3分</button>
+        <button class="panel-btn" onclick="setTimerMin(5)">5分</button>
+        <button class="panel-btn" onclick="setTimerMin(10)">10分</button>
+      </div>
+    </div>
+    <button class="tool-toggle" onclick="toggleToolPanel()">🛠 工具</button>
+  </div>
+</div>
+
+<!-- 獨立畫筆浮動按鈕 -->
+<button class="draw-fab" id="drawFab" onclick="toggleDraw()" title="畫筆工具">🖊️</button>
+
+<!-- 畫筆 overlay -->
+<canvas class="draw-overlay" id="drawCanvas"></canvas>
+<div class="draw-toolbar" id="drawToolbar">
+  <div class="color-dot active" style="background:#fff;" onclick="setDrawColor('#fff',this)" title="白色"></div>
+  <div class="color-dot" style="background:var(--yellow);" onclick="setDrawColor('#ffd54f',this)" title="黃色"></div>
+  <div class="color-dot" style="background:var(--pink);" onclick="setDrawColor('#ff8a80',this)" title="紅色"></div>
+  <div class="color-dot" style="background:var(--blue);" onclick="setDrawColor('#81d4fa',this)" title="藍色"></div>
+  <div class="color-dot" style="background:var(--green);" onclick="setDrawColor('#a5d6a7',this)" title="綠色"></div>
+  <div style="width:1px;height:12px;background:var(--wood);margin:2px 0;"></div>
+  <input type="range" min="2" max="8" value="3" orient="vertical"
+    style="width:28px;height:60px;accent-color:var(--yellow);writing-mode:vertical-lr;direction:rtl;" oninput="drawLineWidth=this.value" title="粗細">
+  <div style="width:1px;height:12px;background:var(--wood);margin:2px 0;"></div>
+  <button class="panel-btn" onclick="clearDraw()" style="font-size:0.7rem;padding:4px 6px;" title="清除">🗑️</button>
+  <button class="draw-close" onclick="toggleDraw()" style="font-size:0.7rem;padding:5px 8px;">✕</button>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// 1. MODE TOGGLE
+// ─────────────────────────────────────────────
+let isTeacher = false;
+function toggleMode() {
+  if (!isTeacher) {
+    const pwd = prompt('請輸入教師密碼');
+    if (pwd === null) return;
+    if (pwd === 'math2026' || pwd === 'teacher') {
+      isTeacher = true;
+    } else { alert('密碼錯誤'); return; }
+  } else {
+    isTeacher = false;
+  }
+  document.body.classList.toggle('teacher-mode', isTeacher);
+  document.getElementById('mode-label').textContent = isTeacher ? '👨‍🏫 教師模式' : '👨‍🎓 學生模式';
+}
+
+// ─────────────────────────────────────────────
+// 2. CAROUSEL
+// ─────────────────────────────────────────────
+const carStates = {};
+function initCarousel(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const imgs = el.querySelectorAll('.carousel-inner img');
+  carStates[id] = { idx: 0, total: imgs.length };
+  // 第一張顯示
+  if (imgs.length > 0) imgs[0].classList.add('active');
+  // 建立 dots
+  const dotsEl = document.getElementById('dots-' + id);
+  if (dotsEl) {
+    dotsEl.innerHTML = '';
+    for (let i = 0; i < imgs.length; i++) {
+      const d = document.createElement('button');
+      d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      d.onclick = () => carGo(id, i);
+      dotsEl.appendChild(d);
+    }
+  }
+  // 隱藏只有一張的箭頭
+  if (imgs.length <= 1) {
+    el.querySelectorAll('.carousel-btn').forEach(b => b.style.display = 'none');
+  }
+}
+function carGo(id, idx) {
+  const s = carStates[id];
+  s.idx = idx;
+  const el = document.getElementById(id);
+  const imgs = el.querySelectorAll('.carousel-inner img');
+  imgs.forEach((img, i) => img.classList.toggle('active', i === idx));
+  const dots = document.querySelectorAll('#dots-' + id + ' .carousel-dot');
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+function carPrev(id) { const s = carStates[id]; carGo(id, (s.idx - 1 + s.total) % s.total); }
+function carNext(id) { const s = carStates[id]; carGo(id, (s.idx + 1) % s.total); }
+
+// 初始化所有翻頁器
+['car-intro','car-s1','car-s2','car-s3','car-s4','car-s5','car-s6','car-end'].forEach(initCarousel);
+
+// ─────────────────────────────────────────────
+// 3. FULLSCREEN
+// ─────────────────────────────────────────────
+function openFull(img) { document.getElementById('fsImg').src = img.src; document.getElementById('fsOverlay').classList.add('show'); }
+function closeFull() { document.getElementById('fsOverlay').classList.remove('show'); }
+
+// ─────────────────────────────────────────────
+// 4. QUIZ CHECK
+// ─────────────────────────────────────────────
+function checkQ(btn, qid, correct) {
+  const wrap = document.getElementById(qid);
+  if (wrap.dataset.answered) return;
+  wrap.dataset.answered = '1';
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    wrap.querySelectorAll('.q-opt').forEach(b => { if (b !== btn) b.onclick = null; });
+    // 找正確答案高亮
+    const opts = wrap.querySelectorAll('.q-opt');
+    opts.forEach(b => { b.onclick = null; });
+    // 正確的那個用 inline handler 標記了 true
+  }
+  const fb = document.getElementById('fb-' + qid);
+  fb.classList.add('show', correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = (correct ? '✅ 正確！' : '❌ ') + fb.textContent;
+}
+
+// ─────────────────────────────────────────────
+// 5. INTERACTIVE: 三角形內角和 (拖曳)
+// ─────────────────────────────────────────────
+const cv1 = document.getElementById('cv1');
+const ctx1 = cv1.getContext('2d');
+let tri = [
+  { x: 250, y: 50 },
+  { x: 80, y: 260 },
+  { x: 420, y: 260 }
+];
+let dragIdx = -1;
+
+function angleDeg(a, b, c) {
+  const ab = { x: a.x - b.x, y: a.y - b.y };
+  const cb = { x: c.x - b.x, y: c.y - b.y };
+  const dot = ab.x * cb.x + ab.y * cb.y;
+  const cross = ab.x * cb.y - ab.y * cb.x;
+  let angle = Math.atan2(Math.abs(cross), dot) * 180 / Math.PI;
+  return Math.round(angle * 10) / 10;
+}
+
+function drawTri() {
+  const W = cv1.width, H = cv1.height;
+  ctx1.clearRect(0, 0, W, H);
+
+  // 三角形邊
+  ctx1.strokeStyle = '#e8e4d8';
+  ctx1.lineWidth = 2.5;
+  ctx1.beginPath();
+  ctx1.moveTo(tri[0].x, tri[0].y);
+  ctx1.lineTo(tri[1].x, tri[1].y);
+  ctx1.lineTo(tri[2].x, tri[2].y);
+  ctx1.closePath();
+  ctx1.stroke();
+
+  // 計算角度
+  const angles = [
+    angleDeg(tri[1], tri[0], tri[2]),
+    angleDeg(tri[0], tri[1], tri[2]),
+    angleDeg(tri[0], tri[2], tri[1])
+  ];
+  const labels = ['A', 'B', 'C'];
+  const colors = ['#ffd54f', '#ff8a80', '#81d4fa'];
+
+  // 畫角度弧
+  angles.forEach((a, i) => {
+    const p = tri[i];
+    const p1 = tri[(i + 1) % 3];
+    const p2 = tri[(i + 2) % 3];
+    const a1 = Math.atan2(p1.y - p.y, p1.x - p.x);
+    const a2 = Math.atan2(p2.y - p.y, p2.x - p.x);
+    ctx1.strokeStyle = colors[i];
+    ctx1.lineWidth = 2;
+    ctx1.beginPath();
+    // 保證逆時鐘方向
+    let start = a1, end = a2;
+    if ((end - start + 2 * Math.PI) % (2 * Math.PI) > Math.PI) {
+      [start, end] = [end, start];
+    }
+    ctx1.arc(p.x, p.y, 25, start, end);
+    ctx1.stroke();
+  });
+
+  // 頂點圓 + 標籤
+  tri.forEach((p, i) => {
+    ctx1.fillStyle = colors[i];
+    ctx1.beginPath();
+    ctx1.arc(p.x, p.y, 7, 0, Math.PI * 2);
+    ctx1.fill();
+    ctx1.fillStyle = colors[i];
+    ctx1.font = 'bold 14px sans-serif';
+    const ox = p.y < 150 ? -5 : -5;
+    const oy = p.y < 150 ? -15 : 22;
+    ctx1.fillText(`${labels[i]} = ${angles[i]}°`, p.x + ox, p.y + oy);
+  });
+
+  const sum = Math.round((angles[0] + angles[1] + angles[2]) * 10) / 10;
+  document.getElementById('res1').textContent = `∠A(${angles[0]}°) + ∠B(${angles[1]}°) + ∠C(${angles[2]}°) = ${sum}°`;
+}
+
+cv1.addEventListener('mousedown', e => {
+  const rect = cv1.getBoundingClientRect();
+  const sx = cv1.width / rect.width;
+  const mx = (e.clientX - rect.left) * sx;
+  const my = (e.clientY - rect.top) * sx;
+  tri.forEach((p, i) => {
+    if (Math.hypot(p.x - mx, p.y - my) < 20) dragIdx = i;
+  });
+});
+cv1.addEventListener('mousemove', e => {
+  if (dragIdx < 0) return;
+  const rect = cv1.getBoundingClientRect();
+  const sx = cv1.width / rect.width;
+  tri[dragIdx].x = (e.clientX - rect.left) * sx;
+  tri[dragIdx].y = (e.clientY - rect.top) * sx;
+  drawTri();
+});
+cv1.addEventListener('mouseup', () => dragIdx = -1);
+cv1.addEventListener('mouseleave', () => dragIdx = -1);
+// 觸控支援
+cv1.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const rect = cv1.getBoundingClientRect();
+  const sx = cv1.width / rect.width;
+  const t = e.touches[0];
+  const mx = (t.clientX - rect.left) * sx;
+  const my = (t.clientY - rect.top) * sx;
+  tri.forEach((p, i) => { if (Math.hypot(p.x - mx, p.y - my) < 30) dragIdx = i; });
+});
+cv1.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (dragIdx < 0) return;
+  const rect = cv1.getBoundingClientRect();
+  const sx = cv1.width / rect.width;
+  const t = e.touches[0];
+  tri[dragIdx].x = (t.clientX - rect.left) * sx;
+  tri[dragIdx].y = (t.clientY - rect.top) * sx;
+  drawTri();
+});
+cv1.addEventListener('touchend', () => dragIdx = -1);
+drawTri();
+
+// ─────────────────────────────────────────────
+// 6. INTERACTIVE: 三角形外角定理
+// ─────────────────────────────────────────────
+const cv2 = document.getElementById('cv2');
+const ctx2 = cv2.getContext('2d');
+let tri2 = [
+  { x: 250, y: 50 },  // A
+  { x: 80, y: 260 },  // B
+  { x: 350, y: 260 }  // C
+];
+let drag2 = -1;
+
+// 輔助：畫內角弧（選擇較小角的那一側）
+function drawSmallArc(ctx, px, py, r, a1, a2, fillStyle, strokeStyle) {
+  // 計算兩個方向的角度差，選較小的弧
+  let cw = (a2 - a1 + 2 * Math.PI) % (2 * Math.PI); // 順時鐘差
+  let ccw = (a1 - a2 + 2 * Math.PI) % (2 * Math.PI); // 逆時鐘差
+  let anticlockwise = ccw < cw;
+  if (fillStyle) {
+    ctx.fillStyle = fillStyle;
+    ctx.beginPath();
+    ctx.moveTo(px, py);
+    ctx.arc(px, py, r, a1, a2, anticlockwise);
+    ctx.closePath();
+    ctx.fill();
+  }
+  if (strokeStyle) {
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(px, py, r, a1, a2, anticlockwise);
+    ctx.stroke();
+  }
+}
+
+function drawExterior() {
+  const W = cv2.width, H = cv2.height;
+  ctx2.clearRect(0, 0, W, H);
+
+  const A = tri2[0], B = tri2[1], C = tri2[2];
+
+  // 三角形
+  ctx2.strokeStyle = '#e8e4d8';
+  ctx2.lineWidth = 2.5;
+  ctx2.beginPath();
+  ctx2.moveTo(A.x, A.y); ctx2.lineTo(B.x, B.y); ctx2.lineTo(C.x, C.y);
+  ctx2.closePath();
+  ctx2.stroke();
+
+  // 延長 BC 到 D
+  const dx = C.x - B.x, dy = C.y - B.y;
+  const len = Math.hypot(dx, dy);
+  const extX = C.x + (dx / len) * 80;
+  const extY = C.y + (dy / len) * 80;
+
+  ctx2.strokeStyle = var_chalk_dim;
+  ctx2.setLineDash([6, 4]);
+  ctx2.beginPath(); ctx2.moveTo(C.x, C.y); ctx2.lineTo(extX, extY); ctx2.stroke();
+  ctx2.setLineDash([]);
+
+  // 角度值
+  const angA = angleDeg(B, A, C);
+  const angB = angleDeg(A, B, C);
+  const ext = angA + angB;
+
+  // 高亮 ∠A（內角：AB 和 AC 之間的較小角）
+  const aAB = Math.atan2(B.y - A.y, B.x - A.x);
+  const aAC = Math.atan2(C.y - A.y, C.x - A.x);
+  drawSmallArc(ctx2, A.x, A.y, 30, aAB, aAC, 'rgba(255,213,79,0.2)', null);
+
+  // 高亮 ∠B（內角：BA 和 BC 之間的較小角）
+  const aBA = Math.atan2(A.y - B.y, A.x - B.x);
+  const aBC = Math.atan2(C.y - B.y, C.x - B.x);
+  drawSmallArc(ctx2, B.x, B.y, 30, aBA, aBC, 'rgba(255,138,128,0.2)', null);
+
+  // 外角 at C = 延長線 CD 與 CA 之間的角
+  // 外角是 CD 和 CA 之間「不經過內角」的那一側弧
+  const aCA = Math.atan2(A.y - C.y, A.x - C.x);
+  const aCD = Math.atan2(extY - C.y, extX - C.x);
+  const aCB = Math.atan2(B.y - C.y, B.x - C.x);
+
+  // 外角弧：從 CD 到 CA，走「不經過 CB 方向」的那一側
+  // CB 和 CD 方向相反，外角在 CB 的對面
+  // 用叉積判斷：從 CD 方向看，CA 在哪一側
+  const vCD = { x: Math.cos(aCD), y: Math.sin(aCD) };
+  const vCA = { x: Math.cos(aCA), y: Math.sin(aCA) };
+  const cross = vCD.x * vCA.y - vCD.y * vCA.x;
+
+  ctx2.fillStyle = 'rgba(165,214,167,0.25)';
+  ctx2.beginPath();
+  ctx2.moveTo(C.x, C.y);
+  // cross > 0: CA 在 CD 的逆時鐘方向 → 順時鐘畫弧 (anticlockwise=false)
+  // cross < 0: CA 在 CD 的順時鐘方向 → 逆時鐘畫弧 (anticlockwise=true)
+  ctx2.arc(C.x, C.y, 35, aCD, aCA, cross < 0);
+  ctx2.closePath();
+  ctx2.fill();
+  ctx2.strokeStyle = '#a5d6a7';
+  ctx2.lineWidth = 2.5;
+  ctx2.beginPath();
+  ctx2.arc(C.x, C.y, 35, aCD, aCA, cross < 0);
+  ctx2.stroke();
+
+  // Labels
+  ctx2.font = 'bold 13px sans-serif';
+  ctx2.fillStyle = '#ffd54f';
+  ctx2.fillText(`∠A = ${angA}°`, A.x - 20, A.y - 15);
+  ctx2.fillStyle = '#ff8a80';
+  ctx2.fillText(`∠B = ${angB}°`, B.x - 50, B.y + 20);
+  ctx2.fillStyle = '#a5d6a7';
+  ctx2.fillText(`外角 = ${Math.round(ext * 10) / 10}°`, C.x + 10, C.y - 15);
+  ctx2.fillStyle = '#81d4fa';
+  ctx2.fillText('D', extX + 5, extY - 5);
+
+  // 頂點圓
+  const colors2 = ['#ffd54f', '#ff8a80', '#81d4fa'];
+  tri2.forEach((p, i) => {
+    ctx2.fillStyle = colors2[i];
+    ctx2.beginPath(); ctx2.arc(p.x, p.y, 6, 0, Math.PI * 2); ctx2.fill();
+  });
+
+  document.getElementById('res2').textContent = `外角(${Math.round(ext*10)/10}°) = ∠A(${angA}°) + ∠B(${angB}°)`;
+}
+const var_chalk_dim = '#a8a498';
+
+cv2.addEventListener('mousedown', e => {
+  const rect = cv2.getBoundingClientRect();
+  const sx = cv2.width / rect.width;
+  const mx = (e.clientX - rect.left) * sx, my = (e.clientY - rect.top) * sx;
+  tri2.forEach((p, i) => { if (Math.hypot(p.x - mx, p.y - my) < 20) drag2 = i; });
+});
+cv2.addEventListener('mousemove', e => {
+  if (drag2 < 0) return;
+  const rect = cv2.getBoundingClientRect();
+  const sx = cv2.width / rect.width;
+  tri2[drag2].x = (e.clientX - rect.left) * sx;
+  tri2[drag2].y = (e.clientY - rect.top) * sx;
+  drawExterior();
+});
+cv2.addEventListener('mouseup', () => drag2 = -1);
+cv2.addEventListener('mouseleave', () => drag2 = -1);
+cv2.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const rect = cv2.getBoundingClientRect();
+  const sx = cv2.width / rect.width;
+  const t = e.touches[0];
+  const mx = (t.clientX - rect.left) * sx, my = (t.clientY - rect.top) * sx;
+  tri2.forEach((p, i) => { if (Math.hypot(p.x - mx, p.y - my) < 30) drag2 = i; });
+});
+cv2.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (drag2 < 0) return;
+  const rect = cv2.getBoundingClientRect();
+  const sx = cv2.width / rect.width;
+  const t = e.touches[0];
+  tri2[drag2].x = (t.clientX - rect.left) * sx;
+  tri2[drag2].y = (t.clientY - rect.top) * sx;
+  drawExterior();
+});
+cv2.addEventListener('touchend', () => drag2 = -1);
+drawExterior();
+
+// ─────────────────────────────────────────────
+// 7. INTERACTIVE: 多邊形內角和
+// ─────────────────────────────────────────────
+const cv3 = document.getElementById('cv3');
+const ctx3 = cv3.getContext('2d');
+
+function drawPolygonSum() {
+  const n = parseInt(document.getElementById('slider-n3').value);
+  document.getElementById('val-n3').textContent = n;
+  const W = cv3.width, H = cv3.height;
+  ctx3.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2 + 10, r = 120;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI / 2 + (2 * Math.PI * i) / n;
+    pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+  }
+
+  // 畫多邊形
+  ctx3.strokeStyle = '#e8e4d8';
+  ctx3.lineWidth = 2.5;
+  ctx3.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx3.moveTo(p.x, p.y) : ctx3.lineTo(p.x, p.y));
+  ctx3.closePath();
+  ctx3.stroke();
+
+  // 從第一個頂點畫對角線
+  const triColors = ['rgba(255,213,79,0.12)', 'rgba(129,212,250,0.12)', 'rgba(255,138,128,0.12)',
+    'rgba(165,214,167,0.12)', 'rgba(255,183,77,0.12)', 'rgba(206,147,216,0.12)',
+    'rgba(128,222,234,0.12)', 'rgba(255,224,130,0.12)', 'rgba(239,154,154,0.12)', 'rgba(144,202,249,0.12)'];
+
+  for (let i = 2; i < n; i++) {
+    // 填充三角形
+    ctx3.fillStyle = triColors[(i - 2) % triColors.length];
+    ctx3.beginPath();
+    ctx3.moveTo(pts[0].x, pts[0].y);
+    ctx3.lineTo(pts[i - 1].x, pts[i - 1].y);
+    ctx3.lineTo(pts[i].x, pts[i].y);
+    ctx3.closePath();
+    ctx3.fill();
+
+    // 對角線
+    if (i < n - 1) {
+      ctx3.strokeStyle = 'rgba(255,213,79,0.5)';
+      ctx3.setLineDash([4, 4]);
+      ctx3.lineWidth = 1.5;
+      ctx3.beginPath();
+      ctx3.moveTo(pts[0].x, pts[0].y);
+      ctx3.lineTo(pts[i].x, pts[i].y);
+      ctx3.stroke();
+      ctx3.setLineDash([]);
+    }
+  }
+
+  // 頂點標記
+  pts.forEach((p, i) => {
+    ctx3.fillStyle = i === 0 ? '#ffd54f' : '#e8e4d8';
+    ctx3.beginPath(); ctx3.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx3.fill();
+  });
+
+  // 中央文字
+  ctx3.fillStyle = '#ffd54f';
+  ctx3.font = 'bold 16px sans-serif';
+  ctx3.textAlign = 'center';
+  ctx3.fillText(`${n - 2} 個三角形`, cx, cy - 10);
+  ctx3.font = '13px sans-serif';
+  ctx3.fillStyle = '#81d4fa';
+  ctx3.fillText(`對角線 ${n - 3} 條`, cx, cy + 12);
+  ctx3.textAlign = 'start';
+
+  const sum = (n - 2) * 180;
+  document.getElementById('res3').textContent = `${n} 邊形內角和 = (${n}−2) × 180° = ${sum}°`;
+}
+drawPolygonSum();
+
+// ─────────────────────────────────────────────
+// 8. INTERACTIVE: 外角和 360°
+// ─────────────────────────────────────────────
+const cv4 = document.getElementById('cv4');
+const ctx4 = cv4.getContext('2d');
+
+function drawExteriorSum() {
+  const n = parseInt(document.getElementById('slider-n4').value);
+  document.getElementById('val-n4').textContent = n;
+  const W = cv4.width, H = cv4.height;
+  ctx4.clearRect(0, 0, W, H);
+
+  // 左邊畫多邊形 + 外角
+  const cx = W * 0.35, cy = H / 2 + 10, r = 100;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI / 2 + (2 * Math.PI * i) / n;
+    pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+  }
+
+  // 多邊形
+  ctx4.strokeStyle = '#e8e4d8';
+  ctx4.lineWidth = 2;
+  ctx4.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx4.moveTo(p.x, p.y) : ctx4.lineTo(p.x, p.y));
+  ctx4.closePath();
+  ctx4.stroke();
+
+  // 外角弧
+  const extAngle = 360 / n;
+  const extColors = ['#ffd54f', '#ff8a80', '#81d4fa', '#a5d6a7', '#ffb74d', '#ce93d8', '#80deea', '#fff176', '#ef9a9a', '#90caf9'];
+  for (let i = 0; i < n; i++) {
+    const p = pts[i];
+    const prev = pts[(i - 1 + n) % n];
+    const next = pts[(i + 1) % n];
+
+    // 延長前一條邊（prev→p 延伸到 D）
+    const dx = p.x - prev.x, dy = p.y - prev.y;
+    const dl = Math.hypot(dx, dy);
+    const extX = p.x + (dx / dl) * 40;
+    const extY = p.y + (dy / dl) * 40;
+
+    ctx4.strokeStyle = 'rgba(232,228,216,0.3)';
+    ctx4.setLineDash([3, 3]);
+    ctx4.beginPath(); ctx4.moveTo(p.x, p.y); ctx4.lineTo(extX, extY); ctx4.stroke();
+    ctx4.setLineDash([]);
+
+    // 外角弧：延長線方向(aD) 到 下一頂點方向(aNext)
+    // 選擇不經過前一頂點方向(aPrev)的弧
+    const aD = Math.atan2(dy, dx);
+    const aNext = Math.atan2(next.y - p.y, next.x - p.x);
+
+    // 用叉積判斷弧的方向：從 D 方向到 Next 方向
+    const vD = { x: Math.cos(aD), y: Math.sin(aD) };
+    const vN = { x: Math.cos(aNext), y: Math.sin(aNext) };
+    const cross = vD.x * vN.y - vD.y * vN.x;
+
+    ctx4.fillStyle = extColors[i % extColors.length] + '30';
+    ctx4.beginPath();
+    ctx4.moveTo(p.x, p.y);
+    ctx4.arc(p.x, p.y, 18, aD, aNext, cross < 0);
+    ctx4.closePath();
+    ctx4.fill();
+
+    ctx4.strokeStyle = extColors[i % extColors.length];
+    ctx4.lineWidth = 3;
+    ctx4.beginPath();
+    ctx4.arc(p.x, p.y, 18, aD, aNext, cross < 0);
+    ctx4.stroke();
+  }
+
+  // 右邊畫匯聚的外角圓
+  const rcx = W * 0.75, rcy = H / 2;
+  ctx4.strokeStyle = 'rgba(232,228,216,0.3)';
+  ctx4.lineWidth = 1;
+  ctx4.beginPath(); ctx4.arc(rcx, rcy, 60, 0, Math.PI * 2); ctx4.stroke();
+
+  let cumAngle = 0;
+  for (let i = 0; i < n; i++) {
+    const startRad = (cumAngle * Math.PI) / 180 - Math.PI / 2;
+    cumAngle += extAngle;
+    const endRad = (cumAngle * Math.PI) / 180 - Math.PI / 2;
+    ctx4.fillStyle = extColors[i % extColors.length] + '40';
+    ctx4.strokeStyle = extColors[i % extColors.length];
+    ctx4.lineWidth = 3;
+    ctx4.beginPath();
+    ctx4.moveTo(rcx, rcy);
+    ctx4.arc(rcx, rcy, 60, startRad, endRad);
+    ctx4.closePath();
+    ctx4.fill();
+    ctx4.stroke();
+  }
+
+  ctx4.fillStyle = '#ffd54f';
+  ctx4.font = 'bold 14px sans-serif';
+  ctx4.textAlign = 'center';
+  ctx4.fillText('360°', rcx, rcy + 5);
+  ctx4.font = '11px sans-serif';
+  ctx4.fillStyle = '#a8a498';
+  ctx4.fillText(`每個外角 = ${Math.round(extAngle * 100) / 100}°`, rcx, rcy + 80);
+  ctx4.textAlign = 'start';
+
+  document.getElementById('res4').textContent = `${n} 邊形的一組外角和 = ${n} × ${Math.round(extAngle*100)/100}° = 360°`;
+}
+drawExteriorSum();
+
+// ─────────────────────────────────────────────
+// 9. INTERACTIVE: 凸凹多邊形
+// ─────────────────────────────────────────────
+const cv5 = document.getElementById('cv5');
+const ctx5 = cv5.getContext('2d');
+
+function setConvex(isConvex, btn) {
+  btn.parentElement.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  drawConvexConcave(isConvex);
+}
+
+function drawConvexConcave(isConvex) {
+  const W = cv5.width, H = cv5.height;
+  ctx5.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  let pts;
+  let reflexIdx = -1; // 凹角的頂點索引
+
+  if (isConvex) {
+    // 凸五邊形（正五邊形）
+    const r = 100;
+    pts = [];
+    for (let i = 0; i < 5; i++) {
+      const a = -Math.PI / 2 + (2 * Math.PI * i) / 5;
+      pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+    }
+    document.getElementById('res5').textContent = '凸多邊形：所有內角 < 180°，所有對角線都在多邊形內部';
+  } else {
+    // 凹五邊形：正五邊形但第 3 個頂點（右下）向中心凹入
+    const r = 100;
+    pts = [];
+    for (let i = 0; i < 5; i++) {
+      const a = -Math.PI / 2 + (2 * Math.PI * i) / 5;
+      pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+    }
+    // 把第 3 個頂點（索引 2，右下方）向中心推入
+    pts[2].x = cx + 15;
+    pts[2].y = cy - 10;
+    reflexIdx = 2;
+    document.getElementById('res5').textContent = '凹多邊形：至少一個內角 > 180°（凹角/優角），部分對角線在外部';
+  }
+
+  // 填充
+  ctx5.fillStyle = isConvex ? 'rgba(165,214,167,0.15)' : 'rgba(255,138,128,0.15)';
+  ctx5.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx5.moveTo(p.x, p.y) : ctx5.lineTo(p.x, p.y));
+  ctx5.closePath();
+  ctx5.fill();
+
+  // 邊框
+  ctx5.strokeStyle = isConvex ? '#a5d6a7' : '#ff8a80';
+  ctx5.lineWidth = 2.5;
+  ctx5.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx5.moveTo(p.x, p.y) : ctx5.lineTo(p.x, p.y));
+  ctx5.closePath();
+  ctx5.stroke();
+
+  // 凹多邊形：標記凹角 + 畫一條穿過外部的對角線
+  if (!isConvex && reflexIdx >= 0) {
+    const rp = pts[reflexIdx];
+    // 凹角弧（優角 > 180°）
+    const prev = pts[(reflexIdx - 1 + 5) % 5];
+    const next = pts[(reflexIdx + 1) % 5];
+    const aPrev = Math.atan2(prev.y - rp.y, prev.x - rp.x);
+    const aNext = Math.atan2(next.y - rp.y, next.x - rp.x);
+    // 畫凹角弧（大於 180° 的那一側 = 經過多邊形外部的弧）
+    const vP = { x: Math.cos(aPrev), y: Math.sin(aPrev) };
+    const vN = { x: Math.cos(aNext), y: Math.sin(aNext) };
+    const cross = vP.x * vN.y - vP.y * vN.x;
+    // 凹角要畫大角（> 180°），所以用和凸角相反的方向
+    ctx5.fillStyle = 'rgba(255,138,128,0.25)';
+    ctx5.beginPath();
+    ctx5.moveTo(rp.x, rp.y);
+    ctx5.arc(rp.x, rp.y, 22, aPrev, aNext, cross > 0);
+    ctx5.closePath();
+    ctx5.fill();
+    ctx5.strokeStyle = '#ff8a80';
+    ctx5.lineWidth = 2;
+    ctx5.beginPath();
+    ctx5.arc(rp.x, rp.y, 22, aPrev, aNext, cross > 0);
+    ctx5.stroke();
+
+    // 標記 "> 180°"
+    const midA = (aPrev + aNext) / 2 + Math.PI; // 凹角方向（中心偏外側）
+    ctx5.fillStyle = '#ff8a80';
+    ctx5.font = 'bold 12px sans-serif';
+    ctx5.textAlign = 'center';
+    ctx5.fillText('> 180°', rp.x + 40 * Math.cos(midA), rp.y + 40 * Math.sin(midA));
+
+    // 畫一條穿出多邊形外部的對角線（虛線）
+    const diagFrom = pts[0]; // 頂點 0
+    const diagTo = pts[3];   // 頂點 3
+    ctx5.strokeStyle = 'rgba(255,213,79,0.5)';
+    ctx5.setLineDash([5, 4]);
+    ctx5.lineWidth = 1.5;
+    ctx5.beginPath();
+    ctx5.moveTo(diagFrom.x, diagFrom.y);
+    ctx5.lineTo(diagTo.x, diagTo.y);
+    ctx5.stroke();
+    ctx5.setLineDash([]);
+
+    // 標示 "對角線穿出外部"
+    const mx = (diagFrom.x + diagTo.x) / 2;
+    const my = (diagFrom.y + diagTo.y) / 2;
+    ctx5.fillStyle = '#ffd54f';
+    ctx5.font = '11px sans-serif';
+    ctx5.fillText('對角線穿出外部', mx + 10, my - 8);
+    ctx5.textAlign = 'start';
+  }
+
+  // 凸多邊形：標記所有內角都 < 180°
+  if (isConvex) {
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      const prev = pts[(i - 1 + 5) % 5];
+      const next = pts[(i + 1) % 5];
+      const aPrev = Math.atan2(prev.y - p.y, prev.x - p.x);
+      const aNext = Math.atan2(next.y - p.y, next.x - p.x);
+      drawSmallArc(ctx5, p.x, p.y, 18, aPrev, aNext, 'rgba(165,214,167,0.2)', null);
+    }
+  }
+
+  // 頂點
+  pts.forEach((p, i) => {
+    ctx5.fillStyle = (!isConvex && i === reflexIdx) ? '#ff8a80' : (isConvex ? '#a5d6a7' : '#e8e4d8');
+    ctx5.beginPath(); ctx5.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx5.fill();
+  });
+
+  // 標籤
+  ctx5.font = 'bold 16px sans-serif';
+  ctx5.fillStyle = isConvex ? '#a5d6a7' : '#ff8a80';
+  ctx5.textAlign = 'center';
+  ctx5.fillText(isConvex ? '凸多邊形 (Convex)' : '凹多邊形 (Concave)', W / 2, 30);
+  ctx5.textAlign = 'start';
+}
+drawConvexConcave(true);
+
+// ─────────────────────────────────────────────
+// 10. INTERACTIVE: 正多邊形內角
+// ─────────────────────────────────────────────
+const cv6 = document.getElementById('cv6');
+const ctx6 = cv6.getContext('2d');
+
+function drawRegular() {
+  const n = parseInt(document.getElementById('slider-n6').value);
+  document.getElementById('val-n6').textContent = n;
+  const W = cv6.width, H = cv6.height;
+  ctx6.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2 + 10, r = 110;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI / 2 + (2 * Math.PI * i) / n;
+    pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+  }
+
+  // 填充
+  ctx6.fillStyle = 'rgba(129,212,250,0.08)';
+  ctx6.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx6.moveTo(p.x, p.y) : ctx6.lineTo(p.x, p.y));
+  ctx6.closePath();
+  ctx6.fill();
+
+  // 邊框
+  ctx6.strokeStyle = '#81d4fa';
+  ctx6.lineWidth = 2.5;
+  ctx6.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx6.moveTo(p.x, p.y) : ctx6.lineTo(p.x, p.y));
+  ctx6.closePath();
+  ctx6.stroke();
+
+  // 等邊標記
+  for (let i = 0; i < n; i++) {
+    const p1 = pts[i], p2 = pts[(i + 1) % n];
+    const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+    ctx6.strokeStyle = '#ffd54f';
+    ctx6.lineWidth = 2;
+    const dx = p2.x - p1.x, dy = p2.y - p1.y;
+    const dl = Math.hypot(dx, dy);
+    const nx = -dy / dl * 6, ny = dx / dl * 6;
+    ctx6.beginPath();
+    ctx6.moveTo(mx + nx - dy / dl * 4, my + ny + dx / dl * 4);
+    ctx6.lineTo(mx + nx + dy / dl * 4, my + ny - dx / dl * 4);
+    ctx6.stroke();
+  }
+
+  // 高亮第一個內角
+  const intAngle = ((n - 2) * 180) / n;
+  const extAngle = 360 / n;
+  const p = pts[0];
+  const a1 = Math.atan2(pts[n - 1].y - p.y, pts[n - 1].x - p.x);
+  const a2 = Math.atan2(pts[1].y - p.y, pts[1].x - p.x);
+  ctx6.fillStyle = 'rgba(255,213,79,0.25)';
+  ctx6.beginPath();
+  ctx6.moveTo(p.x, p.y);
+  let sa = a2, ea = a1;
+  if ((ea - sa + 2 * Math.PI) % (2 * Math.PI) > Math.PI) [sa, ea] = [ea, sa];
+  ctx6.arc(p.x, p.y, 30, sa, ea);
+  ctx6.closePath();
+  ctx6.fill();
+  ctx6.strokeStyle = '#ffd54f';
+  ctx6.lineWidth = 2;
+  ctx6.beginPath();
+  ctx6.arc(p.x, p.y, 30, sa, ea);
+  ctx6.stroke();
+
+  // 角度標籤
+  const midA = (sa + ea) / 2;
+  ctx6.fillStyle = '#ffd54f';
+  ctx6.font = 'bold 12px sans-serif';
+  ctx6.textAlign = 'center';
+  ctx6.fillText(`${Math.round(intAngle * 100) / 100}°`, p.x + 45 * Math.cos(midA), p.y + 45 * Math.sin(midA));
+
+  // 頂點
+  pts.forEach(p => {
+    ctx6.fillStyle = '#81d4fa';
+    ctx6.beginPath(); ctx6.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx6.fill();
+  });
+
+  // 名稱表
+  const names = { 3: '正三角形', 4: '正方形', 5: '正五邊形', 6: '正六邊形', 7: '正七邊形', 8: '正八邊形', 9: '正九邊形', 10: '正十邊形', 11: '正十一邊形', 12: '正十二邊形' };
+  ctx6.fillStyle = '#e8e4d8';
+  ctx6.font = '13px sans-serif';
+  ctx6.fillText(names[n] || `正${n}邊形`, cx, H - 15);
+  ctx6.textAlign = 'start';
+
+  document.getElementById('res6').textContent = `${names[n] || '正'+n+'邊形'}：內角 = ${Math.round(intAngle*100)/100}°、外角 = ${Math.round(extAngle*100)/100}°`;
+}
+drawRegular();
+
+// ─────────────────────────────────────────────
+// 11. TIMER
+// ─────────────────────────────────────────────
+let timerSec = 300, timerInterval = null, timerRunning = false;
+function formatTime(s) {
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+}
+function updateTimerDisp() {
+  const el = document.getElementById('timer-disp');
+  el.textContent = formatTime(timerSec);
+  el.classList.toggle('warning', timerSec <= 30 && timerSec > 0);
+}
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    if (timerSec <= 0) { clearInterval(timerInterval); timerRunning = false; document.getElementById('timer-disp').textContent = '⏰ 時間到！'; return; }
+    timerSec--;
+    updateTimerDisp();
+  }, 1000);
+}
+function pauseTimer() { clearInterval(timerInterval); timerRunning = false; }
+function resetTimer() { pauseTimer(); setTimerMin(5); }
+function setTimerMin(m) { pauseTimer(); timerSec = m * 60; updateTimerDisp(); }
+
+// ─────────────────────────────────────────────
+// 12. RANDOM PICKER
+// ─────────────────────────────────────────────
+let seatStart = 1, seatEnd = 30;
+let students = Array.from({ length: seatEnd - seatStart + 1 }, (_, i) => `${seatStart + i}號`);
+let remaining = [...students];
+
+function applySeatRange() {
+  seatStart = parseInt(document.getElementById('seat-start').value) || 1;
+  seatEnd = parseInt(document.getElementById('seat-end').value) || 30;
+  if (seatStart > seatEnd) [seatStart, seatEnd] = [seatEnd, seatStart];
+  students = Array.from({ length: seatEnd - seatStart + 1 }, (_, i) => `${seatStart + i}號`);
+  resetPicker();
+}
+
+function pickStudent() {
+  if (remaining.length === 0) { alert('全班同學都已被抽過！'); return; }
+  const idx = Math.floor(Math.random() * remaining.length);
+  const picked = remaining.splice(idx, 1)[0];
+  const el = document.getElementById('picker-disp');
+  let count = 0;
+  const roll = setInterval(() => {
+    el.textContent = students[Math.floor(Math.random() * Math.max(students.length, 1))];
+    count++;
+    if (count > 12) {
+      clearInterval(roll);
+      el.textContent = '🎉 ' + picked;
+      document.getElementById('pick-count').textContent = `已抽 ${students.length - remaining.length} / ${students.length} 人`;
+    }
+  }, 80);
+}
+function resetPicker() {
+  remaining = [...students];
+  document.getElementById('picker-disp').textContent = '—';
+  document.getElementById('pick-count').textContent = `${seatStart}號 ~ ${seatEnd}號（共 ${students.length} 人）`;
+}
+
+// ─────────────────────────────────────────────
+// 13. TOOL PANEL
+// ─────────────────────────────────────────────
+function toggleToolPanel() {
+  document.getElementById('toolDrawer').classList.toggle('open');
+}
+
+// ─────────────────────────────────────────────
+// 14. DRAWING
+// ─────────────────────────────────────────────
+const drawCanvas = document.getElementById('drawCanvas');
+const drawCtx = drawCanvas.getContext('2d');
+let drawActive = false, drawing = false;
+let drawColor = '#fff', drawLineWidth = 3;
+
+function toggleDraw() {
+  drawActive = !drawActive;
+  drawCanvas.classList.toggle('active', drawActive);
+  document.getElementById('drawToolbar').classList.toggle('active', drawActive);
+  document.getElementById('drawFab').classList.toggle('active-draw', drawActive);
+  document.getElementById('drawFab').textContent = drawActive ? '✕' : '🖊️';
+  if (drawActive) {
+    drawCanvas.width = window.innerWidth;
+    drawCanvas.height = window.innerHeight;
+  }
+}
+function setDrawColor(c, el) {
+  drawColor = c;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+function clearDraw() {
+  drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+}
+
+drawCanvas.addEventListener('mousedown', e => {
+  drawing = true;
+  drawCtx.beginPath();
+  drawCtx.moveTo(e.clientX, e.clientY);
+});
+drawCanvas.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  drawCtx.strokeStyle = drawColor;
+  drawCtx.lineWidth = drawLineWidth;
+  drawCtx.lineCap = 'round';
+  drawCtx.lineJoin = 'round';
+  drawCtx.lineTo(e.clientX, e.clientY);
+  drawCtx.stroke();
+});
+drawCanvas.addEventListener('mouseup', () => drawing = false);
+drawCanvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  drawing = true;
+  drawCtx.beginPath();
+  drawCtx.moveTo(e.touches[0].clientX, e.touches[0].clientY);
+});
+drawCanvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!drawing) return;
+  drawCtx.strokeStyle = drawColor;
+  drawCtx.lineWidth = drawLineWidth;
+  drawCtx.lineCap = 'round';
+  drawCtx.lineJoin = 'round';
+  drawCtx.lineTo(e.touches[0].clientX, e.touches[0].clientY);
+  drawCtx.stroke();
+});
+drawCanvas.addEventListener('touchend', () => drawing = false);
+
+// ─────────────────────────────────────────────
+// 15. YOUTUBE EMBED
+// ─────────────────────────────────────────────
+function loadYT() {
+  const url = document.getElementById('yt-url').value.trim();
+  if (!url) return;
+  let videoId = '';
+  const m = url.match(/(?:youtu\.be\/|v=)([\w-]+)/);
+  if (m) videoId = m[1];
+  if (videoId) {
+    document.getElementById('yt-embed').innerHTML =
+      `<iframe width="100%" height="400" style="border-radius:8px;margin-top:12px;" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+    document.getElementById('yt-poster').style.display = 'none';
+    document.getElementById('yt-input-area').style.display = 'block';
+  }
+}
+
+// ─────────────────────────────────────────────
+// 16. SMOOTH SCROLL for topic pills
+// ─────────────────────────────────────────────
+document.querySelectorAll('.topic-pill[href]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
