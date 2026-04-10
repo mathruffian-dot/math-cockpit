@@ -470,6 +470,156 @@
     .draw-fab:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
     .draw-fab.active-draw { background: var(--pink); border-color: #c62828; }
 
+    /* ── Mini Game Arena ── */
+    .game-arena {
+      background: linear-gradient(135deg, rgba(255,213,79,0.08), rgba(129,212,250,0.08));
+      border: 2px solid var(--yellow);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3), 0 0 24px rgba(255,213,79,0.08);
+    }
+    .game-title {
+      text-align: center; font-size: 1.15rem; color: var(--yellow);
+      font-weight: 700; margin-bottom: 4px;
+      text-shadow: 0 0 8px rgba(255,213,79,0.4);
+    }
+    .game-subtitle {
+      text-align: center; font-size: 0.78rem;
+      color: var(--chalk-dim); margin-bottom: 14px;
+    }
+    .game-hud {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(0,0,0,0.35); border-radius: 10px;
+      padding: 10px 14px; margin-bottom: 10px;
+      font-size: 0.82rem; flex-wrap: wrap; gap: 8px;
+    }
+    .hud-item .hud-label { color: var(--chalk-dim); margin-right: 4px; font-size: 0.72rem; }
+    .hud-item .hud-value { color: var(--yellow); font-weight: 700; font-size: 1rem; }
+    .hud-item .hud-value.hud-level { color: var(--blue); }
+    .hud-item .hud-value.hud-streak { color: var(--pink); }
+    .game-timer-bar {
+      width: 100%; height: 8px; background: rgba(255,255,255,0.1);
+      border-radius: 4px; overflow: hidden; margin-bottom: 14px;
+    }
+    .game-timer-fill {
+      height: 100%; width: 100%;
+      background: linear-gradient(90deg, var(--pink), var(--yellow), var(--green));
+      transition: width 0.1s linear;
+    }
+    .game-screen { min-height: 240px; }
+    .game-start-screen, .game-play-screen, .game-end-screen { display: none; }
+    .game-screen.show-start .game-start-screen,
+    .game-screen.show-play  .game-play-screen,
+    .game-screen.show-end   .game-end-screen { display: block; }
+
+    .game-level-label {
+      display: inline-block; background: var(--blue); color: #1a1a1a;
+      border-radius: 20px; padding: 4px 14px; font-size: 0.78rem;
+      font-weight: 700; margin-bottom: 10px;
+    }
+    .game-question {
+      font-size: 1.02rem; color: var(--chalk); line-height: 1.7;
+      margin-bottom: 14px; text-align: center;
+      background: rgba(0,0,0,0.25); border-radius: 10px; padding: 16px;
+    }
+    .game-question strong { color: var(--yellow); }
+    .game-options {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .game-opt {
+      background: rgba(129,212,250,0.08);
+      border: 2px solid var(--blue);
+      color: var(--chalk); border-radius: 10px;
+      padding: 14px; font-size: 0.95rem; cursor: pointer;
+      font-family: inherit; font-weight: 600;
+      transition: transform 0.15s, background 0.15s;
+      min-height: 50px;
+    }
+    .game-opt:hover:not(:disabled) {
+      background: var(--blue); color: #1a1a1a; transform: translateY(-1px);
+    }
+    .game-opt.correct {
+      background: var(--green); color: #1a1a1a; border-color: var(--green);
+      animation: gmpop 0.4s;
+    }
+    .game-opt.wrong {
+      background: var(--pink); color: #1a1a1a; border-color: var(--pink);
+    }
+    .game-opt:disabled { cursor: not-allowed; }
+    @keyframes gmpop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+    .game-feedback {
+      margin-top: 12px; text-align: center;
+      font-size: 0.85rem; min-height: 24px; line-height: 1.5;
+      color: var(--chalk-dim);
+    }
+    .game-feedback.correct-fb { color: var(--green); font-weight: 700; }
+    .game-feedback.wrong-fb   { color: var(--pink);  font-weight: 700; }
+    .game-next-btn {
+      display: block; margin: 14px auto 0;
+      background: var(--yellow); color: #1a1a1a; border: none;
+      border-radius: 10px; padding: 10px 28px;
+      font-size: 0.95rem; cursor: pointer;
+      font-family: inherit; font-weight: 700;
+    }
+    .game-next-btn:hover { opacity: 0.85; }
+
+    .game-start-screen { text-align: center; padding: 14px 6px; }
+    .game-levels-preview {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      margin: 14px 0;
+    }
+    .game-level-chip {
+      background: rgba(129,212,250,0.1); border: 1px dashed var(--blue);
+      color: var(--blue); border-radius: 8px; padding: 8px 6px;
+      font-size: 0.74rem; text-align: center; line-height: 1.4;
+    }
+    .game-level-chip .chip-num {
+      display: block; font-size: 0.85rem; color: var(--yellow);
+      font-weight: 700; margin-bottom: 2px;
+    }
+    .game-start-btn {
+      background: linear-gradient(135deg, var(--yellow), var(--orange));
+      color: #1a1a1a; border: none; border-radius: 12px;
+      padding: 14px 40px; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      box-shadow: 0 4px 16px rgba(255,213,79,0.3);
+      margin-top: 8px;
+    }
+    .game-start-btn:hover { transform: translateY(-2px); }
+
+    .game-end-screen { text-align: center; padding: 18px 6px; }
+    .game-result-rank { font-size: 3rem; margin: 8px 0; line-height: 1; }
+    .game-result-score {
+      font-size: 1.4rem; color: var(--yellow); font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .game-result-msg {
+      font-size: 0.88rem; color: var(--chalk-dim);
+      margin-bottom: 16px; line-height: 1.6;
+    }
+    .game-result-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      max-width: 360px; margin: 0 auto 16px;
+    }
+    .game-stat-box {
+      background: rgba(0,0,0,0.3); border-radius: 8px; padding: 8px;
+      font-size: 0.72rem; color: var(--chalk-dim);
+    }
+    .game-stat-box .stat-val {
+      display: block; font-size: 1.1rem; color: var(--blue);
+      font-weight: 700; margin-bottom: 2px;
+    }
+    @media (max-width: 768px) {
+      .game-options { grid-template-columns: 1fr; }
+      .game-levels-preview { grid-template-columns: 1fr 1fr; }
+      .game-opt { min-height: 56px; }
+    }
+
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: var(--board); }
@@ -547,6 +697,8 @@
       <a class="topic-pill" href="#sec5">⑤ 凸凹多邊形</a>
       <div class="topic-arrow">→</div>
       <a class="topic-pill" href="#sec6">⑥ 正多邊形</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec-game" style="background:rgba(255,213,79,0.2);border-color:var(--yellow);color:var(--yellow);">🎮 闖關挑戰</a>
     </div>
   </div>
 
@@ -1006,6 +1158,65 @@
     <div class="formula-row"><span class="f-label">n 邊形外角和</span><span class="f-value">360°（恆等）</span></div>
     <div class="formula-row"><span class="f-label">正 n 邊形單一內角</span><span class="f-value">(n−2)×180° ÷ n = 180° − 360°/n</span></div>
     <div class="formula-row" style="border:none;"><span class="f-label">正 n 邊形單一外角</span><span class="f-value">360° ÷ n</span></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 🎮 互動小遊戲：六關闖關挑戰 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec-game"></div>
+  <div class="section-title"><span class="icon">🎮</span>互動小遊戲：六關闖關挑戰</div>
+  <div class="game-arena">
+    <div class="game-title">🏆 三角形與多邊形大冒險</div>
+    <div class="game-subtitle">六關連續挑戰 · 每關限時 20 秒 · 答對得分 + 連勝加成 + 速度加成</div>
+
+    <div class="game-hud">
+      <div class="hud-item"><span class="hud-label">關卡</span><span class="hud-value hud-level" id="gm-level">—</span></div>
+      <div class="hud-item"><span class="hud-label">分數</span><span class="hud-value" id="gm-score">0</span></div>
+      <div class="hud-item"><span class="hud-label">連勝</span><span class="hud-value hud-streak" id="gm-streak">0</span></div>
+      <div class="hud-item"><span class="hud-label">時間</span><span class="hud-value" id="gm-time">—</span></div>
+    </div>
+    <div class="game-timer-bar"><div class="game-timer-fill" id="gm-timer-fill"></div></div>
+
+    <div class="game-screen show-start" id="gm-screen">
+      <!-- 開始畫面 -->
+      <div class="game-start-screen">
+        <div style="font-size:0.92rem;color:var(--chalk);margin-bottom:4px;">準備好接受挑戰了嗎？</div>
+        <div style="font-size:0.78rem;color:var(--chalk-dim);">六個關卡對應六大重點，答錯不扣分，盡情挑戰！</div>
+        <div class="game-levels-preview">
+          <div class="game-level-chip"><span class="chip-num">① 內角偵探</span>三角形內角和</div>
+          <div class="game-level-chip"><span class="chip-num">② 外角快打</span>外角定理</div>
+          <div class="game-level-chip"><span class="chip-num">③ 多邊形拼圖</span>內角和公式</div>
+          <div class="game-level-chip"><span class="chip-num">④ 外角大解密</span>外角和 360°</div>
+          <div class="game-level-chip"><span class="chip-num">⑤ 凸凹辨識</span>凸 vs 凹</div>
+          <div class="game-level-chip"><span class="chip-num">⑥ 正多邊形達人</span>正 n 邊形</div>
+        </div>
+        <button class="game-start-btn" onclick="startGame()">🚀 開始挑戰</button>
+      </div>
+
+      <!-- 遊玩畫面 -->
+      <div class="game-play-screen">
+        <div style="text-align:center;">
+          <div class="game-level-label" id="gm-level-label">第 1 關</div>
+        </div>
+        <div class="game-question" id="gm-question">—</div>
+        <div class="game-options" id="gm-options"></div>
+        <div class="game-feedback" id="gm-feedback"></div>
+        <button class="game-next-btn" id="gm-next-btn" style="display:none;" onclick="nextLevel()">下一關 →</button>
+      </div>
+
+      <!-- 結算畫面 -->
+      <div class="game-end-screen">
+        <div class="game-result-rank" id="gm-rank">🏆</div>
+        <div class="game-result-score" id="gm-final-score">0 / 120 分</div>
+        <div class="game-result-msg" id="gm-result-msg">—</div>
+        <div class="game-result-stats">
+          <div class="game-stat-box">答對<span class="stat-val" id="gm-correct">0 / 6</span></div>
+          <div class="game-stat-box">最高連勝<span class="stat-val" id="gm-max-streak">0</span></div>
+          <div class="game-stat-box">用時<span class="stat-val" id="gm-total-time">0s</span></div>
+        </div>
+        <button class="game-start-btn" onclick="startGame()">🔄 再挑戰一次</button>
+      </div>
+    </div>
   </div>
 
   <!-- ── 影片區 ── -->
@@ -2051,6 +2262,213 @@ document.querySelectorAll('.topic-pill[href]').forEach(a => {
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
+
+// ─────────────────────────────────────────────
+// 17. MINI GAME: 六關闖關挑戰
+// ─────────────────────────────────────────────
+const GAME_TIME_PER_Q = 20; // 秒
+const GAME_LEVELS = [
+  { name: '三角內角偵探' },
+  { name: '外角快打' },
+  { name: '多邊形拼圖' },
+  { name: '外角大解密' },
+  { name: '凸凹辨識' },
+  { name: '正多邊形達人' }
+];
+const GAME_BANK = {
+  1: [
+    { q: '△ABC 中，∠A = <strong>45°</strong>、∠B = <strong>65°</strong>，∠C = ?', opts: ['60°','65°','70°','75°'], ans: 2, exp: '180°−45°−65° = 70°' },
+    { q: '△ABC 中，∠A = <strong>90°</strong>、∠B = <strong>35°</strong>，∠C = ?', opts: ['45°','55°','65°','75°'], ans: 1, exp: '180°−90°−35° = 55°' },
+    { q: '等腰三角形頂角為 <strong>40°</strong>，每一個底角 = ?', opts: ['60°','65°','70°','80°'], ans: 2, exp: '(180°−40°) ÷ 2 = 70°' },
+    { q: '三角形三內角的比為 <strong>1 : 2 : 3</strong>，最大角 = ?', opts: ['60°','75°','90°','120°'], ans: 2, exp: '180°×(3/6) = 90°' },
+    { q: '△ABC 中，∠A = ∠B = ∠C，則 ∠A = ?', opts: ['45°','60°','75°','90°'], ans: 1, exp: '180° ÷ 3 = 60°（正三角形）' },
+    { q: '△ABC 中，∠A = <strong>28°</strong>、∠C = <strong>92°</strong>，∠B = ?', opts: ['50°','55°','60°','65°'], ans: 2, exp: '180°−28°−92° = 60°' },
+  ],
+  2: [
+    { q: '△ABC 中，∠A = <strong>40°</strong>、∠B = <strong>60°</strong>，∠C 的外角 = ?', opts: ['80°','90°','100°','110°'], ans: 2, exp: '外角 = ∠A + ∠B = 100°' },
+    { q: '△ABC 中，∠B 的外角 = <strong>120°</strong>、∠A = <strong>50°</strong>，∠C = ?', opts: ['60°','70°','80°','90°'], ans: 1, exp: '120° − 50° = 70°' },
+    { q: '△ABC 中，∠A = <strong>25°</strong>、∠C = <strong>75°</strong>，∠B 的外角 = ?', opts: ['80°','90°','100°','110°'], ans: 2, exp: '25° + 75° = 100°' },
+    { q: '△ABC 的一個外角 = <strong>140°</strong>，與它不相鄰的兩內角之和 = ?', opts: ['40°','90°','140°','220°'], ans: 2, exp: '外角 = 不相鄰兩內角和' },
+    { q: '△ABC 中，∠A = <strong>30°</strong>、∠B = 2∠A，∠C 的外角 = ?', opts: ['60°','90°','100°','120°'], ans: 1, exp: '30° + 60° = 90°' },
+    { q: '△ABC 中，∠A 的外角 = <strong>110°</strong>、∠B = <strong>70°</strong>，∠C = ?', opts: ['20°','30°','40°','50°'], ans: 2, exp: '110° − 70° = 40°' },
+  ],
+  3: [
+    { q: '六邊形的內角和 = ?', opts: ['540°','720°','900°','1080°'], ans: 1, exp: '(6−2) × 180° = 720°' },
+    { q: '九邊形的內角和 = ?', opts: ['1080°','1260°','1440°','1620°'], ans: 1, exp: '(9−2) × 180° = 1260°' },
+    { q: '一個多邊形內角和為 <strong>1800°</strong>，它是幾邊形？', opts: ['10 邊形','11 邊形','12 邊形','13 邊形'], ans: 2, exp: '1800 ÷ 180 + 2 = 12' },
+    { q: '七邊形由一個頂點畫對角線，可分成幾個三角形？', opts: ['4 個','5 個','6 個','7 個'], ans: 1, exp: 'n − 2 = 5 個' },
+    { q: '凸四邊形的內角和 = ?', opts: ['180°','270°','360°','540°'], ans: 2, exp: '(4−2) × 180° = 360°' },
+    { q: '十五邊形的內角和 = ?', opts: ['2160°','2340°','2520°','2700°'], ans: 1, exp: '(15−2) × 180° = 2340°' },
+  ],
+  4: [
+    { q: '正六邊形的一個外角 = ?', opts: ['45°','60°','72°','90°'], ans: 1, exp: '360° ÷ 6 = 60°' },
+    { q: '正九邊形的一個外角 = ?', opts: ['30°','36°','40°','45°'], ans: 2, exp: '360° ÷ 9 = 40°' },
+    { q: '任意凸多邊形的一組外角和 = ?', opts: ['180°','270°','360°','依邊數而定'], ans: 2, exp: '不論幾邊形都是 360°' },
+    { q: '正十二邊形的一個外角 = ?', opts: ['24°','30°','36°','45°'], ans: 1, exp: '360° ÷ 12 = 30°' },
+    { q: '一個正多邊形的外角為 <strong>45°</strong>，它是幾邊形？', opts: ['6 邊形','7 邊形','8 邊形','9 邊形'], ans: 2, exp: '360° ÷ 45° = 8' },
+    { q: '正五邊形的一個外角 = ?', opts: ['60°','72°','90°','108°'], ans: 1, exp: '360° ÷ 5 = 72°' },
+  ],
+  5: [
+    { q: '下列何者是凹多邊形的特徵？', opts: ['所有內角 < 180°','至少一內角 > 180°','所有邊等長','所有角相等'], ans: 1, exp: '凹多邊形至少有一個大於 180° 的凹角' },
+    { q: '六邊形有一個內角為 <strong>250°</strong>，它是？', opts: ['凸多邊形','凹多邊形','正多邊形','無法判斷'], ans: 1, exp: '有內角 > 180° → 凹多邊形' },
+    { q: '凸多邊形的任意兩頂點連線（對角線）：', opts: ['一定在外部','一定在內部','可能在外部','與內外無關'], ans: 1, exp: '凸多邊形所有對角線都在內部' },
+    { q: '五邊形的內角皆小於 180°，它是？', opts: ['凸多邊形','凹多邊形','正多邊形','無法判斷'], ans: 0, exp: '所有內角 < 180° → 凸多邊形' },
+    { q: '下列哪個多邊形必為凸多邊形？', opts: ['一般四邊形','風箏形','正多邊形','任意五邊形'], ans: 2, exp: '正多邊形內角相等且皆 < 180°' },
+    { q: '凹多邊形的某一條對角線會：', opts: ['穿過多邊形外部','一定在內部','與邊重合','與邊平行'], ans: 0, exp: '凹多邊形至少有一條對角線穿過外部' },
+  ],
+  6: [
+    { q: '正五邊形的一個內角 = ?', opts: ['100°','108°','120°','135°'], ans: 1, exp: '180° − 360°÷5 = 108°' },
+    { q: '正八邊形的一個內角 = ?', opts: ['120°','135°','140°','144°'], ans: 1, exp: '180° − 360°÷8 = 135°' },
+    { q: '正十邊形的一個內角 = ?', opts: ['135°','140°','144°','150°'], ans: 2, exp: '180° − 36° = 144°' },
+    { q: '一個正多邊形的內角為 <strong>156°</strong>，它是幾邊形？', opts: ['12 邊形','13 邊形','15 邊形','18 邊形'], ans: 2, exp: '外角 = 24°，360° ÷ 24° = 15' },
+    { q: '正六邊形一個內角 + 一個外角 = ?', opts: ['120°','150°','180°','210°'], ans: 2, exp: '內角 + 外角 = 180°（互補）' },
+    { q: '英國 1 英鎊硬幣為正十二邊形，每個內角 = ?', opts: ['140°','144°','150°','156°'], ans: 2, exp: '180° − 30° = 150°' },
+  ]
+};
+
+let gmState = {
+  level: 0, score: 0, streak: 0, maxStreak: 0, correct: 0,
+  timer: null, timeLeft: 0, startTime: 0, answered: false, currentQ: null
+};
+
+function setGameScreen(state) {
+  const s = document.getElementById('gm-screen');
+  s.classList.remove('show-start','show-play','show-end');
+  s.classList.add('show-' + state);
+}
+
+function startGame() {
+  gmState = {
+    level: 0, score: 0, streak: 0, maxStreak: 0, correct: 0,
+    timer: null, timeLeft: 0, startTime: Date.now(), answered: false, currentQ: null
+  };
+  document.getElementById('gm-score').textContent = '0';
+  document.getElementById('gm-streak').textContent = '0';
+  setGameScreen('play');
+  loadLevel(1);
+}
+
+function loadLevel(level) {
+  gmState.level = level;
+  gmState.answered = false;
+  document.getElementById('gm-level').textContent = level + ' / 6';
+  document.getElementById('gm-level-label').textContent = `第 ${level} 關：${GAME_LEVELS[level-1].name}`;
+
+  const bank = GAME_BANK[level];
+  const q = bank[Math.floor(Math.random() * bank.length)];
+  gmState.currentQ = q;
+
+  document.getElementById('gm-question').innerHTML = q.q;
+  const optsWrap = document.getElementById('gm-options');
+  optsWrap.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'game-opt';
+    btn.textContent = String.fromCharCode(65 + i) + '. ' + opt;
+    btn.onclick = () => answerGame(i, btn);
+    optsWrap.appendChild(btn);
+  });
+  const fb = document.getElementById('gm-feedback');
+  fb.textContent = '';
+  fb.className = 'game-feedback';
+  document.getElementById('gm-next-btn').style.display = 'none';
+
+  // 啟動計時（0.1 秒 tick）
+  gmState.timeLeft = GAME_TIME_PER_Q * 10;
+  const fillEl = document.getElementById('gm-timer-fill');
+  const timeEl = document.getElementById('gm-time');
+  fillEl.style.width = '100%';
+  timeEl.textContent = GAME_TIME_PER_Q + 's';
+  clearInterval(gmState.timer);
+  gmState.timer = setInterval(() => {
+    if (gmState.answered) return;
+    gmState.timeLeft--;
+    fillEl.style.width = (gmState.timeLeft / (GAME_TIME_PER_Q * 10) * 100) + '%';
+    timeEl.textContent = Math.max(0, Math.ceil(gmState.timeLeft / 10)) + 's';
+    if (gmState.timeLeft <= 0) {
+      clearInterval(gmState.timer);
+      timeoutGame();
+    }
+  }, 100);
+}
+
+function answerGame(picked, btn) {
+  if (gmState.answered) return;
+  gmState.answered = true;
+  clearInterval(gmState.timer);
+  const q = gmState.currentQ;
+  const allBtns = document.querySelectorAll('#gm-options .game-opt');
+  allBtns.forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('gm-feedback');
+  if (picked === q.ans) {
+    btn.classList.add('correct');
+    const streakBonus = Math.min(gmState.streak, 5); // 0~5
+    const timeBonus = Math.floor(gmState.timeLeft / 40); // 0~5
+    const gained = 10 + streakBonus + timeBonus;
+    gmState.score += gained;
+    gmState.streak++;
+    if (gmState.streak > gmState.maxStreak) gmState.maxStreak = gmState.streak;
+    gmState.correct++;
+    fb.className = 'game-feedback correct-fb';
+    fb.innerHTML = `✅ 正確！ +${gained} 分（基礎 10 + 連勝 ${streakBonus} + 速度 ${timeBonus}）<br><span style="color:var(--chalk-dim);font-weight:400;">${q.exp}</span>`;
+  } else {
+    btn.classList.add('wrong');
+    if (allBtns[q.ans]) allBtns[q.ans].classList.add('correct');
+    gmState.streak = 0;
+    fb.className = 'game-feedback wrong-fb';
+    fb.innerHTML = `❌ 答錯了<br><span style="color:var(--chalk-dim);font-weight:400;">正解：${q.opts[q.ans]}　${q.exp}</span>`;
+  }
+  document.getElementById('gm-score').textContent = gmState.score;
+  document.getElementById('gm-streak').textContent = gmState.streak;
+  const nb = document.getElementById('gm-next-btn');
+  nb.style.display = 'block';
+  nb.textContent = gmState.level >= 6 ? '🏁 查看結果' : '下一關 →';
+}
+
+function timeoutGame() {
+  if (gmState.answered) return;
+  gmState.answered = true;
+  const q = gmState.currentQ;
+  const allBtns = document.querySelectorAll('#gm-options .game-opt');
+  allBtns.forEach(b => b.disabled = true);
+  if (allBtns[q.ans]) allBtns[q.ans].classList.add('correct');
+  gmState.streak = 0;
+  const fb = document.getElementById('gm-feedback');
+  fb.className = 'game-feedback wrong-fb';
+  fb.innerHTML = `⏰ 時間到！<br><span style="color:var(--chalk-dim);font-weight:400;">正解：${q.opts[q.ans]}　${q.exp}</span>`;
+  document.getElementById('gm-streak').textContent = '0';
+  const nb = document.getElementById('gm-next-btn');
+  nb.style.display = 'block';
+  nb.textContent = gmState.level >= 6 ? '🏁 查看結果' : '下一關 →';
+}
+
+function nextLevel() {
+  if (gmState.level >= 6) {
+    endGame();
+  } else {
+    loadLevel(gmState.level + 1);
+  }
+}
+
+function endGame() {
+  setGameScreen('end');
+  const finalScore = gmState.score;
+  const maxScore = 6 * 20; // 每題最高 10+5+5 = 20
+  document.getElementById('gm-final-score').textContent = `${finalScore} / ${maxScore} 分`;
+  let rank, msg;
+  if (finalScore >= 110)      { rank = '🏆 S'; msg = '完美表現！你已是三角形與多邊形大師！'; }
+  else if (finalScore >= 90)  { rank = '🥇 A'; msg = '非常優秀！對六大重點都掌握得很好！'; }
+  else if (finalScore >= 70)  { rank = '🥈 B'; msg = '不錯哦！再練習幾次可以更上一層樓！'; }
+  else if (finalScore >= 50)  { rank = '🥉 C'; msg = '加油！回去複習一下重點，再來挑戰！'; }
+  else                        { rank = '💪 D'; msg = '別灰心，再看一次簡報和互動探索吧！'; }
+  document.getElementById('gm-rank').textContent = rank;
+  document.getElementById('gm-result-msg').textContent = msg;
+  document.getElementById('gm-correct').textContent = gmState.correct + ' / 6';
+  document.getElementById('gm-max-streak').textContent = gmState.maxStreak;
+  const totalSec = Math.round((Date.now() - gmState.startTime) / 1000);
+  document.getElementById('gm-total-time').textContent = totalSec + 's';
+}
 
 /* ── Canvas 響應式 resize handler ── */
 function resizeCanvases() {
