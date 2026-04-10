@@ -219,6 +219,129 @@
     .formula-row .f-label { color: var(--blue); min-width: 180px; }
     .formula-row .f-value { color: var(--yellow); font-weight: 700; }
 
+    /* ── Mini games ── */
+    .game-wrap {
+      background: linear-gradient(180deg, rgba(129,212,250,0.06), rgba(255,213,79,0.04));
+      border: 2px solid var(--blue);
+      border-radius: 12px; padding: 18px; margin-bottom: 16px;
+    }
+    .game-wrap h3 {
+      color: var(--blue); font-size: 1rem; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .game-score {
+      background: var(--yellow); color: #1a1a1a;
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 0.8rem; font-weight: 700;
+      margin-left: auto;
+    }
+    .game-desc {
+      font-size: 0.82rem; color: var(--chalk-dim);
+      margin-bottom: 12px; line-height: 1.6;
+    }
+    /* Game 1: 配對 */
+    .match-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .match-col { display: flex; flex-direction: column; gap: 8px; }
+    .match-col h4 {
+      font-size: 0.8rem; color: var(--yellow);
+      text-align: center; padding-bottom: 6px;
+      border-bottom: 1px dashed var(--yellow);
+    }
+    .match-card {
+      background: rgba(232,228,216,0.08);
+      border: 2px solid rgba(232,228,216,0.25);
+      border-radius: 8px; padding: 10px 12px;
+      font-size: 0.88rem; cursor: pointer;
+      text-align: center; color: var(--chalk);
+      transition: all 0.15s; font-family: inherit;
+    }
+    .match-card:hover { border-color: var(--blue); background: rgba(129,212,250,0.12); }
+    .match-card.selected { border-color: var(--yellow); background: rgba(255,213,79,0.18); box-shadow: 0 0 10px rgba(255,213,79,0.3); }
+    .match-card.matched { border-color: var(--green); background: rgba(165,214,167,0.18); color: var(--green); cursor: default; opacity: 0.6; }
+    .match-card.wrong { border-color: var(--pink); background: rgba(255,138,128,0.18); animation: shake 0.4s; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    /* Game 2: 分類 */
+    .classify-eq-row {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 8px; margin-bottom: 14px; min-height: 54px;
+      padding: 10px; border-radius: 8px;
+      background: rgba(0,0,0,0.25); border: 1px dashed var(--chalk-dim);
+    }
+    .classify-eq {
+      background: var(--board-light);
+      border: 2px solid var(--yellow);
+      color: var(--yellow); font-weight: 700;
+      border-radius: 8px; padding: 8px 14px;
+      font-size: 0.88rem; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .classify-eq:hover { transform: translateY(-2px); box-shadow: 0 3px 8px rgba(255,213,79,0.3); }
+    .classify-eq.selected { background: var(--yellow); color: #1a1a1a; }
+    .classify-bins {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .classify-bin {
+      border: 2px dashed rgba(232,228,216,0.3);
+      border-radius: 10px; padding: 10px;
+      min-height: 80px; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .classify-bin:hover { border-color: var(--blue); background: rgba(129,212,250,0.08); }
+    .classify-bin h4 {
+      font-size: 0.8rem; color: var(--blue);
+      text-align: center; margin-bottom: 6px;
+    }
+    .classify-bin .bin-items {
+      display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+    }
+    .classify-bin .bin-item {
+      background: rgba(129,212,250,0.15);
+      border: 1px solid var(--blue);
+      color: var(--blue); border-radius: 6px;
+      padding: 3px 8px; font-size: 0.78rem;
+    }
+    .classify-bin.correct-drop { border-color: var(--green); background: rgba(165,214,167,0.1); }
+    .classify-bin.wrong-drop { border-color: var(--pink); background: rgba(255,138,128,0.1); animation: shake 0.4s; }
+    /* Game 3: 猜方程式 */
+    .guess-canvas-wrap {
+      background: var(--board);
+      border: 2px solid rgba(232,228,216,0.2);
+      border-radius: 10px; padding: 10px; margin-bottom: 12px;
+    }
+    .guess-canvas-wrap canvas { display: block; margin: 0 auto; max-width: 100%; }
+    .guess-opts {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .guess-opt {
+      background: rgba(232,228,216,0.06);
+      border: 2px solid rgba(232,228,216,0.25);
+      border-radius: 8px; padding: 12px;
+      font-size: 0.9rem; cursor: pointer;
+      font-family: inherit; color: var(--chalk);
+      transition: all 0.15s;
+    }
+    .guess-opt:hover { border-color: var(--blue); background: rgba(129,212,250,0.1); }
+    .guess-opt.correct { border-color: var(--green); background: rgba(165,214,167,0.18); color: var(--green); }
+    .guess-opt.wrong { border-color: var(--pink); background: rgba(255,138,128,0.18); color: var(--pink); }
+    .game-next-btn {
+      display: block; margin: 12px auto 0;
+      background: var(--yellow); color: #1a1a1a;
+      border: none; border-radius: 8px;
+      padding: 10px 24px; font-size: 0.9rem;
+      font-weight: 700; cursor: pointer;
+      font-family: inherit;
+    }
+    .game-next-btn:hover { opacity: 0.85; }
+    @media (max-width: 768px) {
+      .match-grid, .classify-bins, .guess-opts { grid-template-columns: 1fr; }
+    }
+
     /* ── Floating tool panel ── */
     .tool-panel {
       position: fixed; right: 0; top: 50%; transform: translateY(-50%);
@@ -854,6 +977,65 @@
         <li>延伸：若兩直線平行 → 無交點 → 聯立無解；若重合 → 無限多解（本節不深入）</li>
       </ul>
     </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 互動小遊戲 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="section-title"><span class="icon">🎮</span>互動小遊戲</div>
+
+  <!-- 遊戲 1：解對配對 -->
+  <div class="game-wrap">
+    <h3>🎯 遊戲 1｜解對配對 <span class="game-score" id="game1-score">0 / 5</span></h3>
+    <div class="game-desc">左欄是方程式，右欄是數對。先點左邊一個方程式，再點右邊對應的正確解。配對成功會變綠色。</div>
+    <div class="match-grid">
+      <div class="match-col">
+        <h4>方程式</h4>
+        <div id="match-eqs"></div>
+      </div>
+      <div class="match-col">
+        <h4>解（數對）</h4>
+        <div id="match-pts"></div>
+      </div>
+    </div>
+    <button class="game-next-btn" onclick="resetMatch()">🔄 重新開始</button>
+  </div>
+
+  <!-- 遊戲 2：方程式分類 -->
+  <div class="game-wrap">
+    <h3>🗂️ 遊戲 2｜方程式圖形分類 <span class="game-score" id="game2-score">0 / 8</span></h3>
+    <div class="game-desc">先點一個黃色方程式，再點下方對應的類別框。分類正確會把方程式放進框內。</div>
+    <div class="classify-eq-row" id="classify-pool"></div>
+    <div class="classify-bins">
+      <div class="classify-bin" onclick="dropClassify(this, 'horizontal')">
+        <h4>➖ 水平線 (y = k)</h4>
+        <div class="bin-items" id="bin-horizontal"></div>
+      </div>
+      <div class="classify-bin" onclick="dropClassify(this, 'vertical')">
+        <h4>⏐ 鉛垂線 (x = h)</h4>
+        <div class="bin-items" id="bin-vertical"></div>
+      </div>
+      <div class="classify-bin" onclick="dropClassify(this, 'origin')">
+        <h4>🎯 通過原點 (c = 0)</h4>
+        <div class="bin-items" id="bin-origin"></div>
+      </div>
+      <div class="classify-bin" onclick="dropClassify(this, 'general')">
+        <h4>📈 一般斜線</h4>
+        <div class="bin-items" id="bin-general"></div>
+      </div>
+    </div>
+    <button class="game-next-btn" onclick="resetClassify()">🔄 重新開始</button>
+  </div>
+
+  <!-- 遊戲 3：猜方程式 -->
+  <div class="game-wrap">
+    <h3>🎲 遊戲 3｜看圖猜方程式 <span class="game-score" id="game3-score">0 分</span></h3>
+    <div class="game-desc">下圖顯示一條直線，從 4 個選項中選出它對應的方程式。答對 +10 分，答錯 -5 分。</div>
+    <div class="guess-canvas-wrap">
+      <canvas id="cvGuess" width="420" height="300"></canvas>
+    </div>
+    <div class="guess-opts" id="guess-opts"></div>
+    <button class="game-next-btn" onclick="nextGuess()">➡️ 下一題</button>
   </div>
 
   <!-- ══════════════════════════════════════════════════ -->
@@ -1547,6 +1729,275 @@ drawHorizontal();
 drawVertical();
 drawLineFromTwoPts();
 drawSystem();
+
+// ─────────────────────────────────────────────
+// 10.5 GAME 1：解對配對
+// ─────────────────────────────────────────────
+const matchData = [
+  { eq: '2x + y = 5', pt: '(1 , 3)' },
+  { eq: 'x − y = 0', pt: '(2 , 2)' },
+  { eq: '3x + 2y = 6', pt: '(0 , 3)' },
+  { eq: 'x + 3y = 15', pt: '(3 , 4)' },
+  { eq: 'y = x − 3', pt: '(5 , 2)' }
+];
+let match1 = { selectedEq: null, matched: 0, shuffledPts: [] };
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderMatch() {
+  const eqBox = document.getElementById('match-eqs');
+  const ptBox = document.getElementById('match-pts');
+  eqBox.innerHTML = '';
+  ptBox.innerHTML = '';
+  matchData.forEach((m, i) => {
+    const e = document.createElement('button');
+    e.className = 'match-card';
+    e.textContent = m.eq;
+    e.dataset.idx = i;
+    e.onclick = () => pickMatchEq(i, e);
+    eqBox.appendChild(e);
+  });
+  match1.shuffledPts = shuffle(matchData.map((m, i) => ({ pt: m.pt, idx: i })));
+  match1.shuffledPts.forEach(sp => {
+    const p = document.createElement('button');
+    p.className = 'match-card';
+    p.textContent = sp.pt;
+    p.dataset.idx = sp.idx;
+    p.onclick = () => pickMatchPt(sp.idx, p);
+    ptBox.appendChild(p);
+  });
+  updateMatchScore();
+}
+function pickMatchEq(idx, el) {
+  if (el.classList.contains('matched')) return;
+  document.querySelectorAll('#match-eqs .match-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  match1.selectedEq = { idx, el };
+}
+function pickMatchPt(idx, el) {
+  if (el.classList.contains('matched')) return;
+  if (!match1.selectedEq) return;
+  if (match1.selectedEq.idx === idx) {
+    match1.selectedEq.el.classList.remove('selected');
+    match1.selectedEq.el.classList.add('matched');
+    el.classList.add('matched');
+    match1.matched++;
+    updateMatchScore();
+    match1.selectedEq = null;
+    if (match1.matched === matchData.length) {
+      setTimeout(() => alert('🎉 恭喜全部配對成功！'), 200);
+    }
+  } else {
+    el.classList.add('wrong');
+    setTimeout(() => el.classList.remove('wrong'), 400);
+  }
+}
+function updateMatchScore() {
+  document.getElementById('game1-score').textContent = `${match1.matched} / ${matchData.length}`;
+}
+function resetMatch() {
+  match1 = { selectedEq: null, matched: 0, shuffledPts: [] };
+  renderMatch();
+}
+
+// ─────────────────────────────────────────────
+// 10.6 GAME 2：方程式圖形分類
+// ─────────────────────────────────────────────
+const classifyPool = [
+  { eq: 'y = 3', type: 'horizontal' },
+  { eq: 'x = -2', type: 'vertical' },
+  { eq: '2x + y = 0', type: 'origin' },
+  { eq: '3x - y = 6', type: 'general' },
+  { eq: 'y = -1', type: 'horizontal' },
+  { eq: 'x + 2y = 0', type: 'origin' },
+  { eq: 'x = 4', type: 'vertical' },
+  { eq: 'x + y = 5', type: 'general' }
+];
+let classify2 = { selectedEq: null, placed: 0, items: [] };
+
+function renderClassify() {
+  const pool = document.getElementById('classify-pool');
+  pool.innerHTML = '';
+  ['bin-horizontal', 'bin-vertical', 'bin-origin', 'bin-general'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  classify2.items = shuffle(classifyPool.slice());
+  classify2.items.forEach((it, i) => {
+    const e = document.createElement('button');
+    e.className = 'classify-eq';
+    e.textContent = it.eq;
+    e.dataset.idx = i;
+    e.onclick = () => pickClassifyEq(i, e);
+    pool.appendChild(e);
+  });
+  classify2.placed = 0;
+  classify2.selectedEq = null;
+  updateClassifyScore();
+}
+function pickClassifyEq(idx, el) {
+  document.querySelectorAll('.classify-eq').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  classify2.selectedEq = { idx, el };
+}
+function dropClassify(bin, type) {
+  if (!classify2.selectedEq) return;
+  const idx = classify2.selectedEq.idx;
+  const it = classify2.items[idx];
+  if (!it) return;
+  if (it.type === type) {
+    bin.classList.add('correct-drop');
+    setTimeout(() => bin.classList.remove('correct-drop'), 600);
+    const span = document.createElement('span');
+    span.className = 'bin-item';
+    span.textContent = it.eq;
+    bin.querySelector('.bin-items').appendChild(span);
+    classify2.selectedEq.el.remove();
+    classify2.items[idx] = null;
+    classify2.placed++;
+    updateClassifyScore();
+    classify2.selectedEq = null;
+    if (classify2.placed === classifyPool.length) {
+      setTimeout(() => alert('🎉 全部分類正確！'), 300);
+    }
+  } else {
+    bin.classList.add('wrong-drop');
+    setTimeout(() => bin.classList.remove('wrong-drop'), 500);
+  }
+}
+function updateClassifyScore() {
+  document.getElementById('game2-score').textContent = `${classify2.placed} / ${classifyPool.length}`;
+}
+function resetClassify() {
+  renderClassify();
+}
+
+// ─────────────────────────────────────────────
+// 10.7 GAME 3：看圖猜方程式
+// ─────────────────────────────────────────────
+const cvGuess = document.getElementById('cvGuess');
+const ctxGuess = cvGuess.getContext('2d');
+let guess3 = { score: 0, current: null, answered: false };
+
+function genGuessQuestion() {
+  const types = ['horizontal', 'vertical', 'origin', 'general'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  let correct, distractors;
+  if (type === 'horizontal') {
+    const k = Math.floor(Math.random() * 7) - 3;
+    correct = { a: 0, b: 1, c: k, label: `y = ${k}` };
+    distractors = [
+      { a: 1, b: 0, c: k, label: `x = ${k}` },
+      { a: 0, b: 1, c: k + 1, label: `y = ${k + 1}` },
+      { a: 0, b: 1, c: -k, label: `y = ${-k}` }
+    ];
+  } else if (type === 'vertical') {
+    const h = Math.floor(Math.random() * 7) - 3;
+    correct = { a: 1, b: 0, c: h, label: `x = ${h}` };
+    distractors = [
+      { a: 0, b: 1, c: h, label: `y = ${h}` },
+      { a: 1, b: 0, c: h + 1, label: `x = ${h + 1}` },
+      { a: 1, b: 0, c: -h, label: `x = ${-h}` }
+    ];
+  } else if (type === 'origin') {
+    const m = [1, 2, -1, -2][Math.floor(Math.random() * 4)];
+    const mLabel = m === 1 ? '' : (m === -1 ? '-' : m);
+    correct = { a: m, b: -1, c: 0, label: `y = ${mLabel}x` };
+    distractors = [
+      { a: m, b: -1, c: -1, label: `y = ${mLabel}x + 1` },
+      { a: -m, b: -1, c: 0, label: `y = ${-m === 1 ? '' : (-m === -1 ? '-' : -m)}x` },
+      { a: 0, b: 1, c: 0, label: `y = 0` }
+    ];
+  } else {
+    const forms = [
+      { a: 1, b: 1, cRange: [1, 5], labelFn: c => `x + y = ${c}` },
+      { a: 2, b: -1, cRange: [1, 4], labelFn: c => `2x − y = ${c}` },
+      { a: 1, b: -1, cRange: [1, 4], labelFn: c => `x − y = ${c}` },
+      { a: 3, b: 2, cRange: [2, 6], labelFn: c => `3x + 2y = ${c}` }
+    ];
+    const f = forms[Math.floor(Math.random() * forms.length)];
+    const c = f.cRange[0] + Math.floor(Math.random() * (f.cRange[1] - f.cRange[0] + 1));
+    correct = { a: f.a, b: f.b, c, label: f.labelFn(c) };
+    distractors = [
+      { a: f.a, b: f.b, c: c + 1, label: f.labelFn(c + 1) },
+      { a: -f.a, b: -f.b, c: -c, label: f.labelFn(-c) },
+      { a: f.a, b: -f.b, c, label: f.labelFn(c).replace('+', '-').replace('−', '+') }
+    ];
+  }
+  // 去重
+  const seen = new Set();
+  const unique = [correct, ...distractors].filter(o => {
+    if (seen.has(o.label)) return false;
+    seen.add(o.label);
+    return true;
+  });
+  while (unique.length < 4) {
+    unique.push({ a: 1, b: 1, c: unique.length + 10, label: `x + y = ${unique.length + 10}` });
+  }
+  const opts = shuffle(unique.slice(0, 4));
+  const correctIdx = opts.findIndex(o => o === correct);
+  guess3.current = { correct, opts, correctIdx };
+  guess3.answered = false;
+  drawGuessLine(correct);
+  renderGuessOpts();
+}
+
+function drawGuessLine(eq) {
+  const W = cvGuess.width, H = cvGuess.height;
+  const unit = 26;
+  drawAxes(ctxGuess, W, H, unit);
+  drawLineEq(ctxGuess, eq.a, eq.b, eq.c, W, H, unit, '#ffd54f', 3);
+  if (Math.abs(eq.b) > 1e-9 && Math.abs(eq.a) > 1e-9) {
+    drawPoint(ctxGuess, 0, eq.c / eq.b, W, H, unit, '#81d4fa', null);
+    drawPoint(ctxGuess, eq.c / eq.a, 0, W, H, unit, '#81d4fa', null);
+  } else if (Math.abs(eq.b) > 1e-9) {
+    drawPoint(ctxGuess, 0, eq.c / eq.b, W, H, unit, '#81d4fa', null);
+    drawPoint(ctxGuess, 2, eq.c / eq.b, W, H, unit, '#81d4fa', null);
+  } else {
+    drawPoint(ctxGuess, eq.c / eq.a, 0, W, H, unit, '#81d4fa', null);
+    drawPoint(ctxGuess, eq.c / eq.a, 2, W, H, unit, '#81d4fa', null);
+  }
+}
+
+function renderGuessOpts() {
+  const box = document.getElementById('guess-opts');
+  box.innerHTML = '';
+  guess3.current.opts.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'guess-opt';
+    b.textContent = String.fromCharCode(65 + i) + '. ' + o.label;
+    b.onclick = () => answerGuess(i, b);
+    box.appendChild(b);
+  });
+}
+function answerGuess(idx, btn) {
+  if (guess3.answered) return;
+  guess3.answered = true;
+  const isCorrect = idx === guess3.current.correctIdx;
+  if (isCorrect) {
+    btn.classList.add('correct');
+    guess3.score += 10;
+  } else {
+    btn.classList.add('wrong');
+    guess3.score = Math.max(0, guess3.score - 5);
+    document.querySelectorAll('.guess-opt')[guess3.current.correctIdx].classList.add('correct');
+  }
+  document.getElementById('game3-score').textContent = `${guess3.score} 分`;
+}
+function nextGuess() {
+  genGuessQuestion();
+}
+
+// 初始化三個遊戲
+renderMatch();
+renderClassify();
+genGuessQuestion();
 
 // ─────────────────────────────────────────────
 // 11. TIMER
