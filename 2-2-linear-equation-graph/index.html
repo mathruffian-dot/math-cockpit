@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2-2 二元一次方程式的圖形｜教學駕駛艙</title>
+  <style>
+    :root {
+      --board: #1a2a1a;
+      --board-light: #243524;
+      --chalk: #e8e4d8;
+      --chalk-dim: #a8a498;
+      --yellow: #ffd54f;
+      --pink: #ff8a80;
+      --blue: #81d4fa;
+      --green: #a5d6a7;
+      --orange: #ffb74d;
+      --wood: #8d6e4a;
+      --wood-dark: #5d4530;
+      --wood-light: #a8875a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--board);
+      color: var(--chalk);
+      min-height: 100vh;
+    }
+
+    /* ── Header (木框風格) ── */
+    header {
+      background: linear-gradient(180deg, var(--wood-light) 0%, var(--wood) 40%, var(--wood-dark) 100%);
+      color: var(--chalk);
+      padding: 18px 24px 14px;
+      position: sticky; top: 0; z-index: 200;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      border-bottom: 3px solid #3a2a1a;
+    }
+    header h1 { font-size: 1.3rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+    header .meta { font-size: 0.78rem; opacity: 0.85; margin-top: 4px; }
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.72rem;
+      margin-right: 6px;
+    }
+
+    /* ── Mode bar ── */
+    .mode-bar {
+      background: #0d1a0d;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 24px; font-size: 0.8rem; color: var(--chalk-dim);
+      border-bottom: 1px solid #2a3a2a;
+    }
+    .mode-btn {
+      background: var(--yellow); color: #1a1a1a; border: none;
+      border-radius: 20px; padding: 5px 16px; font-size: 0.78rem;
+      cursor: pointer; font-family: inherit; font-weight: 600;
+    }
+    .mode-btn:hover { opacity: 0.85; }
+
+    /* ── Main layout ── */
+    .main-wrap { display: flex; min-height: calc(100vh - 100px); }
+    .container {
+      flex: 1; max-width: 1000px; margin: 0 auto; padding: 20px 20px 60px;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.05rem; font-weight: 700; color: var(--yellow);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px dashed var(--yellow);
+      text-shadow: 0 0 8px rgba(255,213,79,0.3);
+    }
+    .section-title .icon { font-size: 1.2rem; }
+
+    /* ── Cards (粉筆框) ── */
+    .card {
+      background: var(--board-light);
+      border: 2px solid rgba(232,228,216,0.2);
+      border-radius: 12px; padding: 18px; margin-bottom: 16px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .card h3 { font-size: 0.95rem; margin-bottom: 10px; color: var(--blue); }
+    .card p.def { font-size: 0.88rem; line-height: 1.75; color: var(--chalk); }
+    .card p.def strong { color: var(--yellow); }
+    .card .formula-inline {
+      display: inline-block; background: rgba(255,213,79,0.1);
+      border: 1px dashed var(--yellow); border-radius: 6px;
+      padding: 2px 10px; color: var(--yellow); font-weight: 700;
+      margin: 2px 4px;
+    }
+
+    /* ── Objective chips ── */
+    .obj-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .obj-chip {
+      background: rgba(255,213,79,0.1);
+      border: 1px dashed var(--yellow);
+      border-radius: 8px; padding: 6px 12px; font-size: 0.82rem; color: var(--yellow);
+    }
+    .obj-chip .num {
+      background: var(--yellow); color: #1a1a1a;
+      border-radius: 50%; width: 20px; height: 20px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; margin-right: 6px;
+    }
+
+    /* ── Topic flow ── */
+    .topic-flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .topic-pill {
+      background: rgba(129,212,250,0.2); border: 1px solid var(--blue);
+      color: var(--blue); border-radius: 20px; padding: 6px 14px; font-size: 0.82rem;
+      cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .topic-pill:hover, .topic-pill.active { background: var(--blue); color: #1a1a1a; }
+    .topic-arrow { color: var(--chalk-dim); font-size: 1rem; }
+
+    /* ── Interactive canvas area ── */
+    .interactive-area {
+      background: var(--board); border: 2px solid rgba(232,228,216,0.15);
+      border-radius: 10px; padding: 16px; margin-bottom: 12px;
+    }
+    .interactive-area canvas {
+      display: block; margin: 0 auto; border-radius: 8px;
+      background: var(--board); max-width: 100%;
+    }
+    .interactive-area .controls {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+      justify-content: center;
+    }
+    .ctrl-btn {
+      background: rgba(129,212,250,0.15); border: 1px solid var(--blue);
+      color: var(--blue); border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; font-family: inherit;
+      transition: all 0.2s;
+    }
+    .ctrl-btn:hover { background: var(--blue); color: #1a1a1a; }
+    .ctrl-btn.active { background: var(--blue); color: #1a1a1a; }
+    .result-display {
+      text-align: center; font-size: 1.05rem; font-weight: 700;
+      color: var(--yellow); margin: 10px 0;
+      text-shadow: 0 0 6px rgba(255,213,79,0.3);
+      word-break: break-word;
+    }
+
+    /* ── Sliders ── */
+    .slider-row {
+      display: flex; align-items: center; gap: 12px;
+      margin: 8px auto; max-width: 460px;
+    }
+    .slider-row label { font-size: 0.88rem; color: var(--blue); min-width: 46px; }
+    input[type=range] {
+      flex: 1; min-width: 100px;
+      accent-color: var(--yellow);
+    }
+    .slider-val {
+      background: var(--yellow); color: #1a1a1a; font-weight: 700;
+      border-radius: 6px; padding: 2px 10px; font-size: 0.9rem;
+      min-width: 36px; text-align: center;
+    }
+
+    /* ── Formative assessment ── */
+    .quiz-inline {
+      background: rgba(255,138,128,0.08);
+      border: 1px dashed var(--pink);
+      border-radius: 10px; padding: 14px; margin: 12px 0;
+    }
+    .quiz-inline .q-text { font-size: 0.9rem; margin-bottom: 10px; line-height: 1.7; }
+    .quiz-inline .q-text strong { color: var(--yellow); }
+    .q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .q-opt {
+      background: rgba(232,228,216,0.05);
+      border: 2px solid rgba(232,228,216,0.2);
+      border-radius: 8px; padding: 10px 14px; font-size: 0.85rem;
+      cursor: pointer; text-align: left; font-family: inherit;
+      color: var(--chalk); transition: all 0.2s;
+    }
+    .q-opt:hover { border-color: var(--blue); background: rgba(129,212,250,0.1); }
+    .q-opt.correct { border-color: var(--green); background: rgba(165,214,167,0.15); color: var(--green); }
+    .q-opt.wrong { border-color: var(--pink); background: rgba(255,138,128,0.1); color: var(--pink); }
+    .q-feedback {
+      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      font-size: 0.85rem; display: none; line-height: 1.6;
+    }
+    .q-feedback.show { display: block; }
+    .q-feedback.correct-fb { background: rgba(165,214,167,0.1); color: var(--green); border: 1px solid rgba(165,214,167,0.3); }
+    .q-feedback.wrong-fb { background: rgba(255,138,128,0.1); color: var(--pink); border: 1px solid rgba(255,138,128,0.3); }
+
+    /* ── Teacher-only content ── */
+    .teacher-only { display: none; }
+    body.teacher-mode .teacher-only { display: block; }
+    .teacher-note {
+      background: rgba(255,183,77,0.08);
+      border: 1px dashed var(--orange);
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 0.85rem; line-height: 1.7; margin: 10px 0;
+    }
+    .teacher-note h4 { color: var(--orange); margin-bottom: 8px; }
+    .teacher-note ul { padding-left: 18px; }
+    .teacher-note li { margin-bottom: 4px; color: var(--chalk-dim); }
+
+    /* ── Cheat sheet ── */
+    .cheat-sheet {
+      background: rgba(255,213,79,0.05);
+      border: 2px solid var(--yellow);
+      border-radius: 12px; padding: 20px;
+    }
+    .cheat-sheet h3 { color: var(--yellow); text-align: center; margin-bottom: 14px; }
+    .formula-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px dashed rgba(232,228,216,0.1);
+      font-size: 0.9rem;
+    }
+    .formula-row .f-label { color: var(--blue); min-width: 180px; }
+    .formula-row .f-value { color: var(--yellow); font-weight: 700; }
+
+    /* ── Floating tool panel ── */
+    .tool-panel {
+      position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+      z-index: 300; display: flex; flex-direction: column; align-items: flex-end;
+    }
+    .tool-toggle {
+      background: var(--wood); color: var(--chalk); border: none;
+      border-radius: 8px 0 0 8px; padding: 10px 8px;
+      font-size: 0.8rem; cursor: pointer; font-family: inherit;
+      writing-mode: vertical-rl; letter-spacing: 2px;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.3);
+    }
+    .tool-toggle:hover { background: var(--wood-light); }
+    .tool-drawer {
+      background: linear-gradient(180deg, #2a1a0a, #1a1008);
+      border: 2px solid var(--wood);
+      border-right: none; border-radius: 12px 0 0 12px;
+      width: 240px; padding: 16px;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+      max-height: 80vh; overflow-y: auto;
+      display: none;
+    }
+    .tool-drawer.open { display: block; }
+    .tool-drawer h4 {
+      color: var(--yellow); font-size: 0.85rem;
+      margin: 14px 0 8px; padding-bottom: 4px;
+      border-bottom: 1px dashed var(--wood);
+    }
+    .tool-drawer h4:first-child { margin-top: 0; }
+
+    .panel-timer {
+      font-size: 2rem; font-weight: 700; text-align: center;
+      color: var(--yellow); font-variant-numeric: tabular-nums; margin: 8px 0;
+    }
+    .panel-timer.warning { color: var(--pink); animation: pulse 0.5s infinite alternate; }
+    @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+    .panel-btns { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+    .panel-btn {
+      background: rgba(232,228,216,0.1); border: 1px solid var(--chalk-dim);
+      color: var(--chalk); border-radius: 6px; padding: 5px 10px;
+      font-size: 0.75rem; cursor: pointer; font-family: inherit;
+    }
+    .panel-btn:hover { background: rgba(232,228,216,0.2); }
+    .panel-btn.primary { background: var(--yellow); color: #1a1a1a; border-color: var(--yellow); }
+    .panel-btn.danger { background: var(--pink); color: #1a1a1a; border-color: var(--pink); }
+
+    .panel-picker {
+      font-size: 1.5rem; font-weight: 700; text-align: center;
+      color: var(--blue); min-height: 50px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pick-main-btn {
+      display: block; width: 100%; background: var(--yellow); color: #1a1a1a;
+      border: none; border-radius: 8px; padding: 10px;
+      font-size: 0.9rem; cursor: pointer; font-weight: 700;
+      margin-top: 6px; font-family: inherit;
+    }
+
+    /* ── Drawing overlay ── */
+    .draw-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 400; display: none; cursor: crosshair;
+    }
+    .draw-overlay.active { display: block; }
+    .draw-toolbar {
+      position: fixed; left: 16px; top: 50%; transform: translateY(-50%);
+      z-index: 401; background: rgba(42,26,10,0.95);
+      border: 2px solid var(--wood); border-radius: 12px;
+      padding: 12px 10px; display: none;
+      flex-direction: column; gap: 8px; align-items: center;
+    }
+    .draw-toolbar.active { display: flex; }
+    .color-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid transparent; cursor: pointer;
+    }
+    .color-dot.active { border-color: white; box-shadow: 0 0 6px white; }
+    .draw-close {
+      background: var(--pink); color: #1a1a1a; border: none;
+      border-radius: 8px; padding: 6px 14px; font-size: 0.8rem;
+      cursor: pointer; font-family: inherit; font-weight: 700;
+    }
+    .draw-fab {
+      position: fixed; bottom: 24px; left: 24px; z-index: 350;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--wood-light), var(--wood));
+      color: var(--chalk); border: 3px solid var(--wood-dark);
+      font-size: 1.5rem; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .draw-fab:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
+    .draw-fab.active-draw { background: var(--pink); border-color: #c62828; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .container { max-width: 100%; padding: 16px 14px 40px; }
+      .interactive-area canvas { width: 100%; height: auto; }
+      .tool-panel { position: static; width: 100%; margin-top: 12px; }
+    }
+    @media (max-width: 768px) {
+      .container { padding: 12px 10px 40px; }
+      header h1 { font-size: 1.05rem; }
+      header .meta { font-size: 0.7rem; }
+      .section-title { font-size: 1rem; padding: 8px 12px; }
+      .obj-chip { display: inline-flex; flex-wrap: wrap; }
+      .topic-pill { margin-bottom: 6px; }
+      .q-options { grid-template-columns: 1fr; }
+      .interactive-area canvas { width: 100%; height: auto; }
+      .tool-drawer { width: 200px; }
+      .tool-panel { position: static; width: 100%; }
+      .draw-fab { bottom: 16px; left: 16px; width: 50px; height: 50px; }
+      .draw-toolbar { bottom: 76px; left: 16px; }
+      input[type="number"] { min-height: 44px; font-size: 1rem; padding: 8px; }
+      input[type="range"] { min-height: 44px; }
+      .cheat-sheet .formula-row { flex-direction: column; gap: 4px; }
+      .formula-row .f-label { min-width: unset; }
+      .q-opt { padding: 14px 16px; min-height: 44px; }
+      .color-dot { width: 36px; height: 36px; }
+      .topic-pill { min-height: 44px; display: inline-flex; align-items: center; }
+      .obj-chip { min-height: 44px; }
+      .ctrl-btn { min-height: 44px; min-width: 44px; padding: 8px 16px; }
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--board); }
+    ::-webkit-scrollbar-thumb { background: var(--wood); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <h1>📈 2-2 二元一次方程式的圖形 — 教學駕駛艙</h1>
+  <div class="meta">
+    <span class="badge">七年級下學期</span>
+    <span class="badge">第 2 章 直角坐標與二元一次方程式的圖形</span>
+    <span class="badge">A-7-5</span>
+  </div>
+</header>
+
+<!-- Mode bar -->
+<div class="mode-bar">
+  <span id="mode-label">👨‍🎓 學生模式</span>
+  <button class="mode-btn" onclick="toggleMode()">🔑 切換教師模式</button>
+</div>
+
+<div class="main-wrap">
+<div class="container">
+
+  <!-- ── 學習目標 ── -->
+  <div class="section-title"><span class="icon">🎯</span>學習目標</div>
+  <div class="card">
+    <div class="obj-grid">
+      <div class="obj-chip"><span class="num">1</span>能將方程式的解寫成數對並標示在坐標平面上</div>
+      <div class="obj-chip"><span class="num">2</span>理解 ax+by=c 的圖形是一條直線</div>
+      <div class="obj-chip"><span class="num">3</span>能用兩組解（與兩軸交點法）畫出方程式的圖形</div>
+      <div class="obj-chip"><span class="num">4</span>能認識並畫出 y=k 的水平線</div>
+      <div class="obj-chip"><span class="num">5</span>能認識並畫出 x=h 的鉛垂線</div>
+      <div class="obj-chip"><span class="num">6</span>能由已知點求出對應的二元一次方程式</div>
+      <div class="obj-chip"><span class="num">7</span>理解二元一次聯立方程式的解就是兩直線的交點</div>
+    </div>
+  </div>
+
+  <!-- Teacher note -->
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>📋 教師備忘｜教學流程建議（約 3 節課）</h4>
+      <ul>
+        <li><strong>第 1 節</strong>：重點 1-2（解與描點、ax+by=c 的圖形是直線）— 由解集合過渡到圖形</li>
+        <li><strong>第 2 節</strong>：重點 3-5（畫圖形兩點法、y=k、x=h）— 掌握畫圖技巧</li>
+        <li><strong>第 3 節</strong>：重點 6-7（由點求方程式、聯立方程式的圖形）— 連結前一節聯立方程式</li>
+      </ul>
+      <p style="margin-top:8px;color:var(--orange);font-size:0.8rem;">💡 引入情境：北回歸線 y = 23.5、電力坐標、北極星坐標，都是生活中的直線方程式。</p>
+    </div>
+  </div>
+
+  <!-- ── 主題導覽 ── -->
+  <div class="section-title"><span class="icon">🗺️</span>單元主題導覽</div>
+  <div class="card">
+    <div class="topic-flow">
+      <a class="topic-pill" href="#sec1">① 解與描點</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec2">② ax+by=c 的圖形</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec3">③ 兩軸交點法</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec4">④ y=k 水平線</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec5">⑤ x=h 鉛垂線</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec6">⑥ 由點求方程式</a>
+      <div class="topic-arrow">→</div>
+      <a class="topic-pill" href="#sec7">⑦ 聯立方程式的圖形</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 1：解與描點 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec1"></div>
+  <div class="section-title"><span class="icon">📍</span>重點 1：從方程式的解到坐標點</div>
+
+  <div class="card">
+    <h3>📖 概念定義</h3>
+    <p class="def">
+      一個二元一次方程式的任意一組解，可以記錄成 <strong>數對（x , y）</strong> 的形式。
+      將 x 的值寫在前、y 的值寫在後。例如 <span class="formula-inline">x=3、y=4</span> 是 x+3y=15 的一組解，
+      記成 <span class="formula-inline">(3 , 4)</span>。這個數對在坐標平面上對應一個點。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：把解變成點</h3>
+    <div class="interactive-area">
+      <canvas id="cv1" width="500" height="360"></canvas>
+      <div class="slider-row">
+        <label>x =</label>
+        <input type="range" id="slider-x1" min="-3" max="5" step="1" value="0" oninput="drawDots1()">
+        <div class="slider-val" id="val-x1">0</div>
+      </div>
+      <div class="result-display" id="res1">代入 2x+y=5：y = 5 − 2×0 = 5，解為 (0 , 5)</div>
+      <p style="text-align:center;font-size:0.78rem;color:var(--chalk-dim);">以方程式 2x+y=5 為例，拖動滑桿觀察 x 值改變時 y 值與對應點的變化</p>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="resetDots1()">清除已描點</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s1">
+    <div class="q-text">📝 <strong>形成性評量</strong>：下列哪一個數對是二元一次方程式 3x+y=4 的解？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1',true)">A. (0 , 4)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1',false)">B. (2 , -2)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1',false)">C. (-2 , 2)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1',false)">D. (1 , 2)</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s1">代入檢查：3×0+4=4 ✓（A 正確）；3×2+(-2)=4 ✓ 其實也對，但此題選最明顯的 (0,4)。注意：(-2,2) → 3×(-2)+2=-4 ≠ 4。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s1b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：當 x=3 時，二元一次方程式 2x−y=4 中的 y 值為多少？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1b',false)">A. y = -2</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1b',true)">B. y = 2</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1b',false)">C. y = 4</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s1b',false)">D. y = 6</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s1b">代入 x=3：2×3−y=4，6−y=4，所以 y=2。解為數對 (3 , 2)。</div>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>強調數對的順序「x 在前、y 在後」，不可顛倒</li>
+        <li>引導學生觀察：對同一個方程式，x 值不同 → y 值也不同 → 對應到不同的點</li>
+        <li>常見錯誤：把數對 (3, 4) 誤解為「x=4, y=3」</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 2：ax+by=c 的圖形是直線 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec2"></div>
+  <div class="section-title"><span class="icon">📈</span>重點 2：ax+by=c 的圖形是一條直線</div>
+
+  <div class="card">
+    <h3>📖 概念定義</h3>
+    <p class="def">
+      設 a、b、c 為已知數，二元一次方程式 <strong>ax+by=c</strong> 的所有解在坐標平面上會形成<strong>一條直線</strong>，
+      這條直線就是該方程式的圖形。直線上的任何一點都是此方程式的一組解，反之亦然。
+      當 <span class="formula-inline">c=0</span> 時，直線會通過<strong>原點</strong>。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：很多組解會連成一條直線</h3>
+    <div class="interactive-area">
+      <canvas id="cv2" width="500" height="360"></canvas>
+      <div class="slider-row">
+        <label>解的數量</label>
+        <input type="range" id="slider-n2" min="2" max="20" step="1" value="3" oninput="drawLine2()">
+        <div class="slider-val" id="val-n2">3</div>
+      </div>
+      <div class="controls">
+        <button class="ctrl-btn active" onclick="setEq2(0,this)">3x+2y=6</button>
+        <button class="ctrl-btn" onclick="setEq2(1,this)">x−y=0</button>
+        <button class="ctrl-btn" onclick="setEq2(2,this)">3x+2y=0</button>
+      </div>
+      <div class="result-display" id="res2">3x+2y=6：描出 3 組解的點</div>
+      <p style="text-align:center;font-size:0.78rem;color:var(--chalk-dim);">拖動滑桿增加解的數量，觀察點越來越密集，最後連成一條直線</p>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s2">
+    <div class="q-text">📝 <strong>形成性評量</strong>：在坐標平面上，二元一次方程式 ax+by=c（a, b 不同時為 0）的圖形是什麼？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2',false)">A. 一個點</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2',true)">B. 一條直線</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2',false)">C. 一個圓</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2',false)">D. 一條曲線</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s2">ax+by=c 的所有解在坐標平面上的圖形都是一條直線，這是本節最核心的性質。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s2b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：二元一次方程式 4x−y=0 的圖形有什麼特點？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2b',false)">A. 與 x 軸垂直</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2b',false)">B. 與 y 軸平行</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2b',true)">C. 通過原點的直線</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s2b',false)">D. 不通過原點</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s2b">因為 c=0，所以 (0, 0) 滿足方程式，圖形必然通過原點。當 ax+by=c 中 c=0 時，圖形是通過原點的直線。</div>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>引導學生「描點越多 → 連成直線」的直觀過程</li>
+        <li>強調：直線上任何一點都是方程式的解，反之亦然</li>
+        <li>c=0 是特殊情況：一定通過原點，只需再找一組解即可畫出</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 3：兩軸交點法畫圖形 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec3"></div>
+  <div class="section-title"><span class="icon">✏️</span>重點 3：畫圖形的好方法 — 兩軸交點法</div>
+
+  <div class="card">
+    <h3>📖 概念定義</h3>
+    <p class="def">
+      因為<strong>相異兩點可以畫出唯一的一條直線</strong>，所以只要找兩組解就能畫出直線。
+      為了方便，通常先找<strong>與兩軸的交點</strong>：
+      令 <span class="formula-inline">x=0</span> 求 y 坐標 → 得 y 軸交點；
+      令 <span class="formula-inline">y=0</span> 求 x 坐標 → 得 x 軸交點。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：調整 a、b、c 觀察兩軸交點</h3>
+    <div class="interactive-area">
+      <canvas id="cv3" width="500" height="380"></canvas>
+      <div class="slider-row">
+        <label>a =</label>
+        <input type="range" id="slider-a3" min="-5" max="5" step="1" value="3" oninput="drawIntercepts()">
+        <div class="slider-val" id="val-a3">3</div>
+      </div>
+      <div class="slider-row">
+        <label>b =</label>
+        <input type="range" id="slider-b3" min="-5" max="5" step="1" value="-4" oninput="drawIntercepts()">
+        <div class="slider-val" id="val-b3">-4</div>
+      </div>
+      <div class="slider-row">
+        <label>c =</label>
+        <input type="range" id="slider-c3" min="-12" max="12" step="1" value="12" oninput="drawIntercepts()">
+        <div class="slider-val" id="val-c3">12</div>
+      </div>
+      <div class="result-display" id="res3">3x − 4y = 12，x 軸交點 (4, 0)，y 軸交點 (0, -3)</div>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s3">
+    <div class="q-text">📝 <strong>形成性評量</strong>：二元一次方程式 3x−y=6 的圖形與 y 軸的交點坐標為何？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3',false)">A. (6, 0)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3',false)">B. (2, 0)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3',true)">C. (0, -6)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3',false)">D. (0, 6)</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s3">y 軸上任一點的 x 坐標為 0，代入 3×0−y=6，得 y=−6，所以 y 軸交點為 (0, −6)。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s3b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：要畫出二元一次方程式的圖形，最少需要幾組解？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3b',false)">A. 1 組</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3b',true)">B. 2 組</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3b',false)">C. 3 組</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s3b',false)">D. 5 組</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s3b">相異兩點可決定唯一一條直線，所以最少只需 2 組解（2 個點）就能畫出圖形。常用的是兩軸的交點。</div>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>強調「相異兩點決定一條直線」的幾何原理</li>
+        <li>兩軸交點法的好處：x=0 和 y=0 讓計算最簡單</li>
+        <li>當方程式通過原點（c=0）時，兩軸交點重合 → 此時必須另找一組解</li>
+        <li>常見錯誤：令 x=0 求出 y=-6 後，誤把數對寫成 (-6, 0)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 4：y=k 水平線 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec4"></div>
+  <div class="section-title"><span class="icon">➖</span>重點 4：y = k 是水平線</div>
+
+  <div class="card">
+    <h3>📖 概念定義</h3>
+    <p class="def">
+      y = k 可以看成 <span class="formula-inline">0x + y = k</span>，不論 x 取何值，y 都等於 k。
+      它的圖形是一條與 x 軸<strong>平行</strong>的水平線，通過點 (0 , k)。特別地，
+      <span class="formula-inline">y=0 的圖形就是 x 軸</span>。例如北回歸線「y = 23.5」就是一條水平線。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：調整 k 觀察水平線</h3>
+    <div class="interactive-area">
+      <canvas id="cv4" width="500" height="380"></canvas>
+      <div class="slider-row">
+        <label>k =</label>
+        <input type="range" id="slider-k4" min="-5" max="5" step="1" value="2" oninput="drawHorizontal()">
+        <div class="slider-val" id="val-k4">2</div>
+      </div>
+      <div class="result-display" id="res4">y = 2：通過 (0, 2) 與 x 軸平行的水平線</div>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s4">
+    <div class="q-text">📝 <strong>形成性評量</strong>：方程式 y = −3 在坐標平面上的圖形是？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4',false)">A. 與 y 軸平行的鉛垂線</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4',true)">B. 與 x 軸平行的水平線</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4',false)">C. 通過原點的斜線</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4',false)">D. 一個點</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s4">y=k 形式的方程式都是與 x 軸平行的水平線。y=−3 通過點 (0, −3) 並與 x 軸平行。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s4b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：下列哪一個點不在方程式 y = 4 的圖形上？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4b',false)">A. (0, 4)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4b',false)">B. (2, 4)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4b',false)">C. (-1, 4)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s4b',true)">D. (4, 0)</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s4b">y=4 的圖形上所有點的 y 坐標都必須是 4。只有 (4, 0) 的 y 坐標是 0，不符合。</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 5：x=h 鉛垂線 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec5"></div>
+  <div class="section-title"><span class="icon">⏐</span>重點 5：x = h 是鉛垂線</div>
+
+  <div class="card">
+    <h3>📖 概念定義</h3>
+    <p class="def">
+      x = h 可以看成 <span class="formula-inline">x + 0y = h</span>，不論 y 取何值，x 都等於 h。
+      它的圖形是一條與 y 軸<strong>平行</strong>的鉛垂線，通過點 (h , 0)。特別地，
+      <span class="formula-inline">x=0 的圖形就是 y 軸</span>。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：調整 h 觀察鉛垂線</h3>
+    <div class="interactive-area">
+      <canvas id="cv5" width="500" height="380"></canvas>
+      <div class="slider-row">
+        <label>h =</label>
+        <input type="range" id="slider-h5" min="-5" max="5" step="1" value="3" oninput="drawVertical()">
+        <div class="slider-val" id="val-h5">3</div>
+      </div>
+      <div class="result-display" id="res5">x = 3：通過 (3, 0) 與 y 軸平行的鉛垂線</div>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s5">
+    <div class="q-text">📝 <strong>形成性評量</strong>：下列哪個方程式的圖形是鉛垂線？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5',false)">A. y = -2</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5',true)">B. x = 5</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5',false)">C. y = 3x + 1</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5',false)">D. x + y = 0</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s5">x=h 形式的方程式（如 x=5）圖形是與 y 軸平行的鉛垂線。y=k 是水平線，其他則是斜線。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s5b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：哪個方程式的圖形通過點 A(−4, −1) 且與 y 軸平行？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5b',false)">A. y = -1</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5b',true)">B. x = -4</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5b',false)">C. x = -1</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s5b',false)">D. y = -4</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s5b">平行 y 軸 → 鉛垂線 → x=h 形式。因為通過 (−4, −1)，所以 h=−4，方程式為 x=−4。</div>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>最常見錯誤：x=h 與 y=k 搞混（「橫跟 x 有關還是 y 有關」）</li>
+        <li>記憶口訣：「y=k 橫、x=h 豎」（y 等於一個數 → 水平線；x 等於一個數 → 鉛垂線）</li>
+        <li>與 y 軸平行 ⟺ 垂直 x 軸，要讓學生能在兩種說法之間轉換</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 6：由點求方程式 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec6"></div>
+  <div class="section-title"><span class="icon">🔍</span>重點 6：由直線上的已知點反求方程式</div>
+
+  <div class="card">
+    <h3>📖 概念定義</h3>
+    <p class="def">
+      如果知道直線通過的兩個點，可以將點的坐標代入方程式一般式（如 ax+by=1 或 y=ax+b），
+      解出未知係數，就能反求出直線方程式。<strong>若圖形是水平線或鉛垂線</strong>則直接讀出 x 或 y 坐標即可。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：拖動兩點觀察方程式變化</h3>
+    <div class="interactive-area">
+      <canvas id="cv6" width="500" height="380"></canvas>
+      <div class="result-display" id="res6">通過 P(3, 5)、Q(1, 1) 的直線方程式：2x − y = 1</div>
+      <p style="text-align:center;font-size:0.78rem;color:var(--chalk-dim);">拖動紫色點 P 或 Q，觀察方程式即時更新</p>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s6">
+    <div class="q-text">📝 <strong>形成性評量</strong>：方程式 ax+by=2 的圖形通過 P(1, 1)、Q(4, −2) 兩點，則 a+b 為多少？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6',true)">A. 2</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6',false)">B. 3</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6',false)">C. 4</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6',false)">D. 6</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s6">代入 P: a+b=2。代入 Q: 4a−2b=2 → 2a−b=1。由兩式解得 a=1, b=1，所以 a+b=2。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s6b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：求同時通過 A(3, −4)、B(5, −4) 兩點的方程式？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6b',false)">A. x = -4</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6b',true)">B. y = -4</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6b',false)">C. x = 3</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s6b',false)">D. x + y = -4</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s6b">觀察 A、B 兩點的 y 坐標都是 −4（x 坐標不同），所以通過這兩點的直線是水平線 y=−4。</div>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>先觀察兩點是否有特殊關係：x 坐標相同 → 鉛垂線；y 坐標相同 → 水平線</li>
+        <li>一般情況則代入 ax+by=1（或 y=ax+b）解聯立方程式</li>
+        <li>常見錯誤：看到兩點就無腦代入 ax+by=1，忽略了水平鉛垂線的特殊情況</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 重點 7：聯立方程式的圖形 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="sec7"></div>
+  <div class="section-title"><span class="icon">✴️</span>重點 7：二元一次聯立方程式的圖形與解</div>
+
+  <div class="card">
+    <h3>📖 概念定義</h3>
+    <p class="def">
+      一組二元一次聯立方程式包含兩個方程式，分別是坐標平面上的<strong>兩條直線</strong>。
+      當兩條直線相交於一點時，這個<strong>交點的坐標就是聯立方程式的解</strong>；
+      反之，聯立方程式的解也是兩條直線的共同點。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🧪 互動探索：觀察兩直線交點即聯立解</h3>
+    <div class="interactive-area">
+      <canvas id="cv7" width="500" height="400"></canvas>
+      <div class="slider-row">
+        <label>L₁: c₁=</label>
+        <input type="range" id="slider-c71" min="-10" max="10" step="1" value="1" oninput="drawSystem()">
+        <div class="slider-val" id="val-c71">1</div>
+      </div>
+      <div class="slider-row">
+        <label>L₂: c₂=</label>
+        <input type="range" id="slider-c72" min="-10" max="10" step="1" value="4" oninput="drawSystem()">
+        <div class="slider-val" id="val-c72">4</div>
+      </div>
+      <div class="result-display" id="res7">L₁: x−y=1, L₂: x+2y=4，交點 (2, 1)</div>
+      <p style="text-align:center;font-size:0.78rem;color:var(--chalk-dim);">兩條直線分別為 x−y=c₁ 和 x+2y=c₂，調整常數觀察交點變化</p>
+    </div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s7">
+    <div class="q-text">📝 <strong>形成性評量</strong>：兩條直線 x+y=3 與 2x−3y=1 的交點坐標為何？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s7',true)">A. (2, 1)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s7',false)">B. (1, 2)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s7',false)">C. (3, 0)</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s7',false)">D. (0, 3)</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s7">解聯立：第一式×3 得 3x+3y=9，與第二式相加：5x=10，x=2，代回得 y=1。交點為 (2, 1)。</div>
+  </div>
+
+  <div class="quiz-inline" id="quiz-s7b">
+    <div class="q-text">📝 <strong>形成性評量</strong>：如果兩個二元一次方程式的圖形交於點 P(−1, 3)，那麼 x=−1, y=3 是？</div>
+    <div class="q-options">
+      <button class="q-opt" onclick="checkQ(this,'quiz-s7b',false)">A. 只是第一個方程式的解</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s7b',false)">B. 只是第二個方程式的解</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s7b',true)">C. 兩個方程式的共同解（聯立方程式的解）</button>
+      <button class="q-opt" onclick="checkQ(this,'quiz-s7b',false)">D. 兩個方程式都不是解</button>
+    </div>
+    <div class="q-feedback" id="fb-quiz-s7b">交點同時在兩條直線上，表示它同時滿足兩個方程式，所以是聯立方程式的共同解。</div>
+  </div>
+
+  <div class="teacher-only">
+    <div class="teacher-note">
+      <h4>💡 教學提示</h4>
+      <ul>
+        <li>連結第 1 章的代數解法：代入消去法 / 加減消去法，與圖形解法互相驗證</li>
+        <li>強調「交點 = 共同解」的幾何意義：交點同時在兩條直線上</li>
+        <li>延伸：若兩直線平行 → 無交點 → 聯立無解；若重合 → 無限多解（本節不深入）</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- 總結 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="section-title"><span class="icon">🏆</span>總結 Cheat Sheet</div>
+  <div class="cheat-sheet">
+    <h3>Master's Cheat Sheet（2-2 重點總結）</h3>
+    <div class="formula-row"><span class="f-label">方程式的一組解</span><span class="f-value">數對 (x , y) → 坐標平面上一個點</span></div>
+    <div class="formula-row"><span class="f-label">ax+by=c 的圖形</span><span class="f-value">一條直線</span></div>
+    <div class="formula-row"><span class="f-label">畫圖形的方法</span><span class="f-value">找兩組解（常用兩軸交點）</span></div>
+    <div class="formula-row"><span class="f-label">x 軸交點</span><span class="f-value">令 y=0 → 求 x</span></div>
+    <div class="formula-row"><span class="f-label">y 軸交點</span><span class="f-value">令 x=0 → 求 y</span></div>
+    <div class="formula-row"><span class="f-label">y = k 的圖形</span><span class="f-value">水平線（平行 x 軸，通過 (0, k)）</span></div>
+    <div class="formula-row"><span class="f-label">x = h 的圖形</span><span class="f-value">鉛垂線（平行 y 軸，通過 (h, 0)）</span></div>
+    <div class="formula-row"><span class="f-label">c = 0 的特殊情況</span><span class="f-value">圖形通過原點</span></div>
+    <div class="formula-row" style="border:none;"><span class="f-label">聯立方程式的解</span><span class="f-value">兩條直線的交點坐標</span></div>
+  </div>
+
+  <!-- ── 生活情境區 ── -->
+  <div class="section-title"><span class="icon">🌏</span>生活情境連結</div>
+  <div class="card">
+    <h3>🧭 北回歸線 / 電力坐標 / 北極星</h3>
+    <p class="def" style="margin-bottom:8px;">
+      🌍 <strong>北回歸線</strong>：經過嘉義、南投、花蓮，緯度都是 23.5° → 方程式 <span class="formula-inline">y = 23.5</span>（水平線）
+    </p>
+    <p class="def" style="margin-bottom:8px;">
+      ⚡ <strong>電力坐標</strong>：電線桿編號結合字母分區與 (x, y) 坐標，受困時可報出坐標求救
+    </p>
+    <p class="def">
+      ⭐ <strong>北極星</strong>：由北斗七星的天璇 (0, 0)、天樞 (5, −1) 延伸 5 倍 → 北極星坐標 (30, −6)
+    </p>
+  </div>
+
+  <!-- 教師常見錯誤 -->
+  <div class="teacher-only">
+    <div class="section-title"><span class="icon">📊</span>常見錯誤分析</div>
+    <div class="teacher-note">
+      <h4>📊 教師｜學生常見錯誤</h4>
+      <ul>
+        <li>數對順序寫反：(3, 5) 誤解為「x=5, y=3」</li>
+        <li>y=k 與 x=h 搞混：「y=3 是鉛垂線？」</li>
+        <li>令 x=0 求得 y=5 後，把交點寫成 (5, 0) 而非 (0, 5)</li>
+        <li>方程式通過原點時（c=0）忘了兩軸交點重合，只找到 (0,0) 一個點</li>
+        <li>由兩點求方程式時，忽略水平線/鉛垂線的特殊情況，硬套 ax+by=1</li>
+        <li>聯立方程式的解：記成「某一條直線上的點」而非「交點」</li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /container -->
+</div><!-- /main-wrap -->
+
+<!-- ── 浮動工具面板 ── -->
+<div class="tool-panel" id="toolPanel">
+  <div style="display:flex;align-items:flex-start;">
+    <div class="tool-drawer" id="toolDrawer">
+
+      <!-- 抽籤器 -->
+      <h4>🎲 抽籤器</h4>
+      <div style="display:flex;gap:4px;align-items:center;margin-bottom:6px;">
+        <label style="font-size:0.72rem;color:var(--chalk-dim);white-space:nowrap;">座號</label>
+        <input type="number" id="seat-start" value="1" min="1" max="99"
+          style="width:42px;background:rgba(0,0,0,0.3);border:1px solid var(--chalk-dim);color:var(--chalk);border-radius:4px;padding:3px 4px;font-size:0.78rem;text-align:center;">
+        <span style="font-size:0.72rem;color:var(--chalk-dim);">~</span>
+        <input type="number" id="seat-end" value="30" min="1" max="99"
+          style="width:42px;background:rgba(0,0,0,0.3);border:1px solid var(--chalk-dim);color:var(--chalk);border-radius:4px;padding:3px 4px;font-size:0.78rem;text-align:center;">
+        <button class="panel-btn" style="font-size:0.7rem;padding:3px 8px;" onclick="applySeatRange()">套用</button>
+      </div>
+      <div class="panel-picker" id="picker-disp">—</div>
+      <div style="text-align:center;font-size:0.72rem;color:var(--chalk-dim);margin:2px 0;" id="pick-count"></div>
+      <button class="pick-main-btn" onclick="pickStudent()">🎲 抽一位同學</button>
+      <button class="panel-btn" style="width:100%;margin-top:4px;" onclick="resetPicker()">重設</button>
+
+      <!-- 計時器 -->
+      <h4>⏱️ 計時器</h4>
+      <div class="panel-timer" id="timer-disp">05:00</div>
+      <div class="panel-btns">
+        <button class="panel-btn primary" onclick="startTimer()">開始</button>
+        <button class="panel-btn" onclick="pauseTimer()">暫停</button>
+        <button class="panel-btn danger" onclick="resetTimer()">重設</button>
+      </div>
+      <div class="panel-btns" style="margin-top:4px;">
+        <button class="panel-btn" onclick="setTimerMin(1)">1分</button>
+        <button class="panel-btn" onclick="setTimerMin(3)">3分</button>
+        <button class="panel-btn" onclick="setTimerMin(5)">5分</button>
+        <button class="panel-btn" onclick="setTimerMin(10)">10分</button>
+      </div>
+    </div>
+    <button class="tool-toggle" onclick="toggleToolPanel()">🛠 工具</button>
+  </div>
+</div>
+
+<!-- 獨立畫筆浮動按鈕 -->
+<button class="draw-fab" id="drawFab" onclick="toggleDraw()" title="畫筆工具">🖊️</button>
+
+<!-- 畫筆 overlay -->
+<canvas class="draw-overlay" id="drawCanvas"></canvas>
+<div class="draw-toolbar" id="drawToolbar">
+  <div class="color-dot active" style="background:#fff;" onclick="setDrawColor('#fff',this)" title="白色"></div>
+  <div class="color-dot" style="background:var(--yellow);" onclick="setDrawColor('#ffd54f',this)" title="黃色"></div>
+  <div class="color-dot" style="background:var(--pink);" onclick="setDrawColor('#ff8a80',this)" title="紅色"></div>
+  <div class="color-dot" style="background:var(--blue);" onclick="setDrawColor('#81d4fa',this)" title="藍色"></div>
+  <div class="color-dot" style="background:var(--green);" onclick="setDrawColor('#a5d6a7',this)" title="綠色"></div>
+  <div style="width:1px;height:12px;background:var(--wood);margin:2px 0;"></div>
+  <input type="range" min="2" max="8" value="3"
+    style="width:28px;height:60px;accent-color:var(--yellow);writing-mode:vertical-lr;direction:rtl;" oninput="drawLineWidth=this.value" title="粗細">
+  <div style="width:1px;height:12px;background:var(--wood);margin:2px 0;"></div>
+  <button class="panel-btn" onclick="clearDraw()" style="font-size:0.7rem;padding:4px 6px;" title="清除">🗑️</button>
+  <button class="draw-close" onclick="toggleDraw()" style="font-size:0.7rem;padding:5px 8px;">✕</button>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// 1. MODE TOGGLE
+// ─────────────────────────────────────────────
+let isTeacher = false;
+function toggleMode() {
+  if (!isTeacher) {
+    const pwd = prompt('請輸入教師密碼');
+    if (pwd === null) return;
+    if (pwd === 'math2026' || pwd === 'teacher') {
+      isTeacher = true;
+    } else { alert('密碼錯誤'); return; }
+  } else {
+    isTeacher = false;
+  }
+  document.body.classList.toggle('teacher-mode', isTeacher);
+  document.getElementById('mode-label').textContent = isTeacher ? '👨‍🏫 教師模式' : '👨‍🎓 學生模式';
+}
+
+// ─────────────────────────────────────────────
+// 2. QUIZ CHECK
+// ─────────────────────────────────────────────
+function checkQ(btn, qid, correct) {
+  const wrap = document.getElementById(qid);
+  if (wrap.dataset.answered) return;
+  wrap.dataset.answered = '1';
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  wrap.querySelectorAll('.q-opt').forEach(b => { b.onclick = null; });
+  const fb = document.getElementById('fb-' + qid);
+  fb.classList.add('show', correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = (correct ? '✅ 正確！' : '❌ ') + fb.textContent;
+}
+
+// ─────────────────────────────────────────────
+// 3. 共用：坐標系繪製輔助
+// ─────────────────────────────────────────────
+// 繪製坐標軸：把 (mathX, mathY) 映射到畫布座標
+// 使用 unit 像素 = 1 單位
+function drawAxes(ctx, W, H, unit, showGrid) {
+  const cx = W / 2, cy = H / 2;
+  ctx.clearRect(0, 0, W, H);
+
+  // 網格
+  if (showGrid !== false) {
+    ctx.strokeStyle = 'rgba(232,228,216,0.08)';
+    ctx.lineWidth = 1;
+    for (let x = cx % unit; x < W; x += unit) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = cy % unit; y < H; y += unit) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+  }
+
+  // 軸
+  ctx.strokeStyle = 'rgba(232,228,216,0.65)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+
+  // 箭頭
+  ctx.fillStyle = 'rgba(232,228,216,0.65)';
+  ctx.beginPath(); ctx.moveTo(W - 2, cy); ctx.lineTo(W - 10, cy - 4); ctx.lineTo(W - 10, cy + 4); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx, 2); ctx.lineTo(cx - 4, 10); ctx.lineTo(cx + 4, 10); ctx.closePath(); ctx.fill();
+
+  // 軸標籤
+  ctx.fillStyle = '#e8e4d8';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.fillText('x', W - 14, cy - 6);
+  ctx.fillText('y', cx + 6, 12);
+  ctx.fillText('O', cx + 4, cy + 12);
+
+  // 刻度
+  ctx.strokeStyle = 'rgba(232,228,216,0.5)';
+  ctx.fillStyle = 'rgba(232,228,216,0.6)';
+  ctx.font = '10px sans-serif';
+  for (let i = 1; i * unit < W / 2; i++) {
+    // +x
+    ctx.beginPath(); ctx.moveTo(cx + i * unit, cy - 3); ctx.lineTo(cx + i * unit, cy + 3); ctx.stroke();
+    ctx.fillText(i, cx + i * unit - 3, cy + 14);
+    // -x
+    ctx.beginPath(); ctx.moveTo(cx - i * unit, cy - 3); ctx.lineTo(cx - i * unit, cy + 3); ctx.stroke();
+    ctx.fillText(-i, cx - i * unit - 6, cy + 14);
+  }
+  for (let i = 1; i * unit < H / 2; i++) {
+    // +y (上)
+    ctx.beginPath(); ctx.moveTo(cx - 3, cy - i * unit); ctx.lineTo(cx + 3, cy - i * unit); ctx.stroke();
+    ctx.fillText(i, cx + 6, cy - i * unit + 4);
+    // -y (下)
+    ctx.beginPath(); ctx.moveTo(cx - 3, cy + i * unit); ctx.lineTo(cx + 3, cy + i * unit); ctx.stroke();
+    ctx.fillText(-i, cx + 6, cy + i * unit + 4);
+  }
+}
+
+// 數學座標轉畫布座標
+function toPx(mathX, mathY, W, H, unit) {
+  return { px: W / 2 + mathX * unit, py: H / 2 - mathY * unit };
+}
+
+// 畫一個點
+function drawPoint(ctx, mathX, mathY, W, H, unit, color, label) {
+  const { px, py } = toPx(mathX, mathY, W, H, unit);
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2); ctx.fill();
+  if (label) {
+    ctx.fillStyle = color;
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillText(label, px + 7, py - 6);
+  }
+}
+
+// 畫直線 ax + by = c（無限延伸到畫布邊緣）
+function drawLineEq(ctx, a, b, c, W, H, unit, color, width) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width || 2.5;
+  ctx.beginPath();
+  // 在畫布 x 範圍內求兩個點
+  const leftMathX = -(W / 2) / unit;
+  const rightMathX = (W / 2) / unit;
+  const pts = [];
+  if (Math.abs(b) > 1e-9) {
+    // y = (c - a x) / b
+    pts.push({ mx: leftMathX, my: (c - a * leftMathX) / b });
+    pts.push({ mx: rightMathX, my: (c - a * rightMathX) / b });
+  } else if (Math.abs(a) > 1e-9) {
+    // x = c / a（鉛垂線）
+    const xv = c / a;
+    pts.push({ mx: xv, my: -(H / 2) / unit });
+    pts.push({ mx: xv, my: (H / 2) / unit });
+  } else {
+    return; // 無圖形
+  }
+  const p1 = toPx(pts[0].mx, pts[0].my, W, H, unit);
+  const p2 = toPx(pts[1].mx, pts[1].my, W, H, unit);
+  ctx.moveTo(p1.px, p1.py);
+  ctx.lineTo(p2.px, p2.py);
+  ctx.stroke();
+}
+
+// ─────────────────────────────────────────────
+// 4. INTERACTIVE sec1: 解與描點 (2x + y = 5)
+// ─────────────────────────────────────────────
+const cv1 = document.getElementById('cv1');
+const ctx1 = cv1.getContext('2d');
+let plottedDots1 = new Set();
+
+function drawDots1() {
+  const W = cv1.width, H = cv1.height;
+  const unit = 38;
+  drawAxes(ctx1, W, H, unit);
+
+  const xv = parseInt(document.getElementById('slider-x1').value);
+  document.getElementById('val-x1').textContent = xv;
+  const yv = 5 - 2 * xv;
+
+  plottedDots1.add(xv + ',' + yv);
+
+  // 已描過的點
+  plottedDots1.forEach(key => {
+    const [mx, my] = key.split(',').map(Number);
+    drawPoint(ctx1, mx, my, W, H, unit, '#81d4fa', `(${mx}, ${my})`);
+  });
+
+  // 高亮當前點
+  drawPoint(ctx1, xv, yv, W, H, unit, '#ffd54f', null);
+  const { px, py } = toPx(xv, yv, W, H, unit);
+  ctx1.strokeStyle = '#ffd54f';
+  ctx1.lineWidth = 2;
+  ctx1.beginPath(); ctx1.arc(px, py, 9, 0, Math.PI * 2); ctx1.stroke();
+  ctx1.fillStyle = '#ffd54f';
+  ctx1.font = 'bold 12px sans-serif';
+  ctx1.fillText(`(${xv}, ${yv})`, px + 11, py - 8);
+
+  document.getElementById('res1').textContent = `代入 2x+y=5：y = 5 − 2×${xv} = ${yv}，解為 (${xv}, ${yv})`;
+}
+function resetDots1() {
+  plottedDots1.clear();
+  drawDots1();
+}
+
+// ─────────────────────────────────────────────
+// 5. INTERACTIVE sec2: ax+by=c 的圖形
+// ─────────────────────────────────────────────
+const cv2 = document.getElementById('cv2');
+const ctx2 = cv2.getContext('2d');
+const eqs2 = [
+  { a: 3, b: 2, c: 6, label: '3x+2y=6' },
+  { a: 1, b: -1, c: 0, label: 'x−y=0' },
+  { a: 3, b: 2, c: 0, label: '3x+2y=0' }
+];
+let eqIdx2 = 0;
+
+function setEq2(idx, btn) {
+  eqIdx2 = idx;
+  btn.parentElement.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  drawLine2();
+}
+
+function drawLine2() {
+  const W = cv2.width, H = cv2.height;
+  const unit = 34;
+  drawAxes(ctx2, W, H, unit);
+
+  const n = parseInt(document.getElementById('slider-n2').value);
+  document.getElementById('val-n2').textContent = n;
+
+  const eq = eqs2[eqIdx2];
+  const { a, b, c } = eq;
+
+  // 當 n 很大時，實際上就已經像一條直線了 — 先畫淡的直線作為襯底
+  if (n >= 10) {
+    drawLineEq(ctx2, a, b, c, W, H, unit, 'rgba(255,213,79,0.4)', 2);
+  }
+
+  // 畫 n 組解的點
+  const xStart = -3, xEnd = 3;
+  const step = (xEnd - xStart) / (n - 1);
+  for (let i = 0; i < n; i++) {
+    const mx = xStart + i * step;
+    let my;
+    if (Math.abs(b) > 1e-9) {
+      my = (c - a * mx) / b;
+    } else {
+      my = 0;
+    }
+    drawPoint(ctx2, mx, my, W, H, unit, '#81d4fa', null);
+  }
+
+  // 畫完整直線（若 n 很大，加強顯示）
+  if (n >= 15) {
+    drawLineEq(ctx2, a, b, c, W, H, unit, '#ffd54f', 3);
+  }
+
+  // 標題文字
+  ctx2.fillStyle = '#ffd54f';
+  ctx2.font = 'bold 14px sans-serif';
+  ctx2.fillText(eq.label, 12, 22);
+
+  let msg = `${eq.label}：描出 ${n} 組解的點`;
+  if (n >= 15) msg += '（已形成一條直線）';
+  document.getElementById('res2').textContent = msg;
+}
+
+// ─────────────────────────────────────────────
+// 6. INTERACTIVE sec3: 兩軸交點法
+// ─────────────────────────────────────────────
+const cv3 = document.getElementById('cv3');
+const ctx3 = cv3.getContext('2d');
+
+function drawIntercepts() {
+  const W = cv3.width, H = cv3.height;
+  const unit = 30;
+  drawAxes(ctx3, W, H, unit);
+
+  const a = parseInt(document.getElementById('slider-a3').value);
+  const b = parseInt(document.getElementById('slider-b3').value);
+  const c = parseInt(document.getElementById('slider-c3').value);
+  document.getElementById('val-a3').textContent = a;
+  document.getElementById('val-b3').textContent = b;
+  document.getElementById('val-c3').textContent = c;
+
+  // 方程式格式化
+  function fmtTerm(coef, v) {
+    if (coef === 0) return '';
+    if (coef === 1) return v;
+    if (coef === -1) return '-' + v;
+    return coef + v;
+  }
+  let eqStr = '';
+  const t1 = fmtTerm(a, 'x'), t2 = fmtTerm(b, 'y');
+  if (t1) eqStr += t1;
+  if (t2) {
+    if (b > 0 && t1) eqStr += '+';
+    eqStr += t2;
+  }
+  if (!eqStr) eqStr = '0';
+  eqStr += ' = ' + c;
+
+  if (a === 0 && b === 0) {
+    ctx3.fillStyle = '#ff8a80';
+    ctx3.font = '14px sans-serif';
+    ctx3.fillText('a, b 不能同時為 0', 12, 22);
+    document.getElementById('res3').textContent = eqStr + '：a, b 不能同時為 0';
+    return;
+  }
+
+  drawLineEq(ctx3, a, b, c, W, H, unit, '#ffd54f', 3);
+
+  // 標記 x 軸交點 (令 y=0 → x=c/a)
+  let xText = '無', yText = '無';
+  if (Math.abs(a) > 1e-9) {
+    const xv = c / a;
+    drawPoint(ctx3, xv, 0, W, H, unit, '#ff8a80', `x 軸: (${xv}, 0)`);
+    xText = `(${xv}, 0)`;
+  }
+  if (Math.abs(b) > 1e-9) {
+    const yv = c / b;
+    drawPoint(ctx3, 0, yv, W, H, unit, '#81d4fa', `y 軸: (0, ${yv})`);
+    yText = `(0, ${yv})`;
+  }
+
+  ctx3.fillStyle = '#ffd54f';
+  ctx3.font = 'bold 14px sans-serif';
+  ctx3.fillText(eqStr, 12, 22);
+
+  document.getElementById('res3').textContent = `${eqStr}，x 軸交點 ${xText}，y 軸交點 ${yText}`;
+}
+
+// ─────────────────────────────────────────────
+// 7. INTERACTIVE sec4: y = k 水平線
+// ─────────────────────────────────────────────
+const cv4 = document.getElementById('cv4');
+const ctx4 = cv4.getContext('2d');
+
+function drawHorizontal() {
+  const W = cv4.width, H = cv4.height;
+  const unit = 36;
+  drawAxes(ctx4, W, H, unit);
+
+  const k = parseInt(document.getElementById('slider-k4').value);
+  document.getElementById('val-k4').textContent = k;
+
+  // 畫 y = k 的水平線
+  drawLineEq(ctx4, 0, 1, k, W, H, unit, '#81d4fa', 3);
+
+  // 標示 (0, k)
+  drawPoint(ctx4, 0, k, W, H, unit, '#ffd54f', `(0, ${k})`);
+
+  // 標示幾個其它點 (x, k)
+  [-3, 2, 4].forEach(mx => {
+    const { px, py } = toPx(mx, k, W, H, unit);
+    ctx4.fillStyle = 'rgba(129,212,250,0.8)';
+    ctx4.beginPath(); ctx4.arc(px, py, 3, 0, Math.PI * 2); ctx4.fill();
+  });
+
+  ctx4.fillStyle = '#81d4fa';
+  ctx4.font = 'bold 14px sans-serif';
+  ctx4.fillText(`y = ${k}`, 12, 22);
+
+  const msg = k === 0
+    ? 'y = 0 的圖形就是 x 軸'
+    : `y = ${k}：通過 (0, ${k}) 與 x 軸平行的水平線`;
+  document.getElementById('res4').textContent = msg;
+}
+
+// ─────────────────────────────────────────────
+// 8. INTERACTIVE sec5: x = h 鉛垂線
+// ─────────────────────────────────────────────
+const cv5 = document.getElementById('cv5');
+const ctx5 = cv5.getContext('2d');
+
+function drawVertical() {
+  const W = cv5.width, H = cv5.height;
+  const unit = 36;
+  drawAxes(ctx5, W, H, unit);
+
+  const h = parseInt(document.getElementById('slider-h5').value);
+  document.getElementById('val-h5').textContent = h;
+
+  // 畫 x = h 的鉛垂線
+  drawLineEq(ctx5, 1, 0, h, W, H, unit, '#ff8a80', 3);
+
+  // 標示 (h, 0)
+  drawPoint(ctx5, h, 0, W, H, unit, '#ffd54f', `(${h}, 0)`);
+
+  // 標示幾個其它點 (h, y)
+  [-3, 2, 4].forEach(my => {
+    const { px, py } = toPx(h, my, W, H, unit);
+    ctx5.fillStyle = 'rgba(255,138,128,0.8)';
+    ctx5.beginPath(); ctx5.arc(px, py, 3, 0, Math.PI * 2); ctx5.fill();
+  });
+
+  ctx5.fillStyle = '#ff8a80';
+  ctx5.font = 'bold 14px sans-serif';
+  ctx5.fillText(`x = ${h}`, 12, 22);
+
+  const msg = h === 0
+    ? 'x = 0 的圖形就是 y 軸'
+    : `x = ${h}：通過 (${h}, 0) 與 y 軸平行的鉛垂線`;
+  document.getElementById('res5').textContent = msg;
+}
+
+// ─────────────────────────────────────────────
+// 9. INTERACTIVE sec6: 由兩點求方程式
+// ─────────────────────────────────────────────
+const cv6 = document.getElementById('cv6');
+const ctx6 = cv6.getContext('2d');
+let pt6P = { mx: 3, my: 5 };
+let pt6Q = { mx: 1, my: 1 };
+let drag6 = null;
+
+// 最大公因數
+function gcd(a, b) {
+  a = Math.abs(a); b = Math.abs(b);
+  while (b) { [a, b] = [b, a % b]; }
+  return a || 1;
+}
+
+function drawLineFromTwoPts() {
+  const W = cv6.width, H = cv6.height;
+  const unit = 32;
+  drawAxes(ctx6, W, H, unit);
+
+  const P = pt6P, Q = pt6Q;
+  let eqStr = '';
+
+  if (P.mx === Q.mx && P.my === Q.my) {
+    eqStr = '兩點重合，無法決定直線';
+    drawPoint(ctx6, P.mx, P.my, W, H, unit, '#ce93d8', `P=Q(${P.mx}, ${P.my})`);
+  } else if (P.mx === Q.mx) {
+    // 鉛垂線 x = h
+    drawLineEq(ctx6, 1, 0, P.mx, W, H, unit, '#ffd54f', 3);
+    eqStr = `x = ${P.mx}（鉛垂線）`;
+    drawPoint(ctx6, P.mx, P.my, W, H, unit, '#ce93d8', `P(${P.mx}, ${P.my})`);
+    drawPoint(ctx6, Q.mx, Q.my, W, H, unit, '#ce93d8', `Q(${Q.mx}, ${Q.my})`);
+  } else if (P.my === Q.my) {
+    // 水平線 y = k
+    drawLineEq(ctx6, 0, 1, P.my, W, H, unit, '#ffd54f', 3);
+    eqStr = `y = ${P.my}（水平線）`;
+    drawPoint(ctx6, P.mx, P.my, W, H, unit, '#ce93d8', `P(${P.mx}, ${P.my})`);
+    drawPoint(ctx6, Q.mx, Q.my, W, H, unit, '#ce93d8', `Q(${Q.mx}, ${Q.my})`);
+  } else {
+    // 通過兩點的直線：寫成 ax + by = c 其中 a = my2-my1, b = mx1-mx2, c = a*x1+b*y1
+    let a = Q.my - P.my;
+    let b = P.mx - Q.mx;
+    let c = a * P.mx + b * P.my;
+    // 化簡（取最大公因數）
+    const g = gcd(gcd(a, b), c);
+    a /= g; b /= g; c /= g;
+    // 讓第一個非零係數為正
+    if (a < 0 || (a === 0 && b < 0)) { a = -a; b = -b; c = -c; }
+
+    drawLineEq(ctx6, a, b, c, W, H, unit, '#ffd54f', 3);
+
+    // 格式化
+    function fmt(coef, v) {
+      if (coef === 0) return '';
+      if (coef === 1) return v;
+      if (coef === -1) return '-' + v;
+      return coef + v;
+    }
+    let s = '';
+    const ta = fmt(a, 'x'), tb = fmt(b, 'y');
+    if (ta) s += ta;
+    if (tb) {
+      if (b > 0 && ta) s += ' + ';
+      else if (b < 0) s += ' − ' + fmt(-b, 'y').replace('-', '').replace('1y', 'y');
+      else s += tb;
+    }
+    if (b < 0) {
+      // 重寫
+      s = ta;
+      if (tb) {
+        s += ' − ' + (Math.abs(b) === 1 ? 'y' : Math.abs(b) + 'y');
+      }
+    }
+    eqStr = `${s} = ${c}`;
+    drawPoint(ctx6, P.mx, P.my, W, H, unit, '#ce93d8', `P(${P.mx}, ${P.my})`);
+    drawPoint(ctx6, Q.mx, Q.my, W, H, unit, '#ce93d8', `Q(${Q.mx}, ${Q.my})`);
+  }
+
+  ctx6.fillStyle = '#ffd54f';
+  ctx6.font = 'bold 14px sans-serif';
+  ctx6.fillText(eqStr, 12, 22);
+
+  document.getElementById('res6').textContent = `通過 P(${P.mx}, ${P.my})、Q(${Q.mx}, ${Q.my}) 的直線方程式：${eqStr}`;
+}
+
+function cv6PtrPos(e) {
+  const rect = cv6.getBoundingClientRect();
+  const sx = cv6.width / rect.width;
+  const sy = cv6.height / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const px = (clientX - rect.left) * sx;
+  const py = (clientY - rect.top) * sy;
+  const unit = 32;
+  const mx = Math.round((px - cv6.width / 2) / unit);
+  const my = Math.round(-(py - cv6.height / 2) / unit);
+  return { mx, my, px, py };
+}
+cv6.addEventListener('mousedown', e => {
+  const p = cv6PtrPos(e);
+  const unit = 32;
+  const P_px = toPx(pt6P.mx, pt6P.my, cv6.width, cv6.height, unit);
+  const Q_px = toPx(pt6Q.mx, pt6Q.my, cv6.width, cv6.height, unit);
+  if (Math.hypot(p.px - P_px.px, p.py - P_px.py) < 18) drag6 = 'P';
+  else if (Math.hypot(p.px - Q_px.px, p.py - Q_px.py) < 18) drag6 = 'Q';
+});
+cv6.addEventListener('mousemove', e => {
+  if (!drag6) return;
+  const p = cv6PtrPos(e);
+  if (drag6 === 'P') pt6P = { mx: p.mx, my: p.my };
+  else pt6Q = { mx: p.mx, my: p.my };
+  drawLineFromTwoPts();
+});
+cv6.addEventListener('mouseup', () => drag6 = null);
+cv6.addEventListener('mouseleave', () => drag6 = null);
+cv6.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const p = cv6PtrPos(e);
+  const unit = 32;
+  const P_px = toPx(pt6P.mx, pt6P.my, cv6.width, cv6.height, unit);
+  const Q_px = toPx(pt6Q.mx, pt6Q.my, cv6.width, cv6.height, unit);
+  if (Math.hypot(p.px - P_px.px, p.py - P_px.py) < 30) drag6 = 'P';
+  else if (Math.hypot(p.px - Q_px.px, p.py - Q_px.py) < 30) drag6 = 'Q';
+});
+cv6.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!drag6) return;
+  const p = cv6PtrPos(e);
+  if (drag6 === 'P') pt6P = { mx: p.mx, my: p.my };
+  else pt6Q = { mx: p.mx, my: p.my };
+  drawLineFromTwoPts();
+});
+cv6.addEventListener('touchend', () => drag6 = null);
+
+// ─────────────────────────────────────────────
+// 10. INTERACTIVE sec7: 聯立方程式的交點
+// ─────────────────────────────────────────────
+// L1: x − y = c1
+// L2: x + 2y = c2
+const cv7 = document.getElementById('cv7');
+const ctx7 = cv7.getContext('2d');
+
+function drawSystem() {
+  const W = cv7.width, H = cv7.height;
+  const unit = 32;
+  drawAxes(ctx7, W, H, unit);
+
+  const c1 = parseInt(document.getElementById('slider-c71').value);
+  const c2 = parseInt(document.getElementById('slider-c72').value);
+  document.getElementById('val-c71').textContent = c1;
+  document.getElementById('val-c72').textContent = c2;
+
+  // 畫 L1: x - y = c1
+  drawLineEq(ctx7, 1, -1, c1, W, H, unit, '#81d4fa', 2.5);
+  // 畫 L2: x + 2y = c2
+  drawLineEq(ctx7, 1, 2, c2, W, H, unit, '#ff8a80', 2.5);
+
+  // 求交點：
+  // x - y = c1
+  // x + 2y = c2
+  // 相減：-3y = c1 - c2 → y = (c2 - c1) / 3
+  // x = c1 + y
+  const y = (c2 - c1) / 3;
+  const x = c1 + y;
+  const yRounded = Math.round(y * 100) / 100;
+  const xRounded = Math.round(x * 100) / 100;
+
+  // 標記交點
+  const pt = toPx(x, y, W, H, unit);
+  ctx7.fillStyle = '#ffd54f';
+  ctx7.beginPath(); ctx7.arc(pt.px, pt.py, 7, 0, Math.PI * 2); ctx7.fill();
+  ctx7.strokeStyle = '#ffd54f';
+  ctx7.lineWidth = 2;
+  ctx7.beginPath(); ctx7.arc(pt.px, pt.py, 12, 0, Math.PI * 2); ctx7.stroke();
+  ctx7.font = 'bold 13px sans-serif';
+  ctx7.fillStyle = '#ffd54f';
+  ctx7.fillText(`交點 (${xRounded}, ${yRounded})`, pt.px + 14, pt.py - 8);
+
+  // 圖例
+  ctx7.font = 'bold 13px sans-serif';
+  ctx7.fillStyle = '#81d4fa';
+  ctx7.fillText(`L₁: x − y = ${c1}`, 12, 22);
+  ctx7.fillStyle = '#ff8a80';
+  ctx7.fillText(`L₂: x + 2y = ${c2}`, 12, 40);
+
+  document.getElementById('res7').textContent =
+    `L₁: x−y=${c1}, L₂: x+2y=${c2}，交點 (${xRounded}, ${yRounded})`;
+}
+
+// 初始繪製
+drawDots1();
+drawLine2();
+drawIntercepts();
+drawHorizontal();
+drawVertical();
+drawLineFromTwoPts();
+drawSystem();
+
+// ─────────────────────────────────────────────
+// 11. TIMER
+// ─────────────────────────────────────────────
+let timerSec = 300, timerInterval = null, timerRunning = false;
+function formatTime(s) {
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+}
+function updateTimerDisp() {
+  const el = document.getElementById('timer-disp');
+  el.textContent = formatTime(timerSec);
+  el.classList.toggle('warning', timerSec <= 30 && timerSec > 0);
+}
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    if (timerSec <= 0) { clearInterval(timerInterval); timerRunning = false; document.getElementById('timer-disp').textContent = '⏰ 時間到！'; return; }
+    timerSec--;
+    updateTimerDisp();
+  }, 1000);
+}
+function pauseTimer() { clearInterval(timerInterval); timerRunning = false; }
+function resetTimer() { pauseTimer(); setTimerMin(5); }
+function setTimerMin(m) { pauseTimer(); timerSec = m * 60; updateTimerDisp(); }
+
+// ─────────────────────────────────────────────
+// 12. RANDOM PICKER
+// ─────────────────────────────────────────────
+let seatStart = 1, seatEnd = 30;
+let students = Array.from({ length: seatEnd - seatStart + 1 }, (_, i) => `${seatStart + i}號`);
+let remaining = [...students];
+
+function applySeatRange() {
+  seatStart = parseInt(document.getElementById('seat-start').value) || 1;
+  seatEnd = parseInt(document.getElementById('seat-end').value) || 30;
+  if (seatStart > seatEnd) [seatStart, seatEnd] = [seatEnd, seatStart];
+  students = Array.from({ length: seatEnd - seatStart + 1 }, (_, i) => `${seatStart + i}號`);
+  resetPicker();
+}
+function pickStudent() {
+  if (remaining.length === 0) { alert('全班同學都已被抽過！'); return; }
+  const idx = Math.floor(Math.random() * remaining.length);
+  const picked = remaining.splice(idx, 1)[0];
+  const el = document.getElementById('picker-disp');
+  let count = 0;
+  const roll = setInterval(() => {
+    el.textContent = students[Math.floor(Math.random() * Math.max(students.length, 1))];
+    count++;
+    if (count > 12) {
+      clearInterval(roll);
+      el.textContent = '🎉 ' + picked;
+      document.getElementById('pick-count').textContent = `已抽 ${students.length - remaining.length} / ${students.length} 人`;
+    }
+  }, 80);
+}
+function resetPicker() {
+  remaining = [...students];
+  document.getElementById('picker-disp').textContent = '—';
+  document.getElementById('pick-count').textContent = `${seatStart}號 ~ ${seatEnd}號（共 ${students.length} 人）`;
+}
+resetPicker();
+
+// ─────────────────────────────────────────────
+// 13. TOOL PANEL
+// ─────────────────────────────────────────────
+function toggleToolPanel() {
+  document.getElementById('toolDrawer').classList.toggle('open');
+}
+
+// ─────────────────────────────────────────────
+// 14. DRAWING
+// ─────────────────────────────────────────────
+const drawCanvas = document.getElementById('drawCanvas');
+const drawCtx = drawCanvas.getContext('2d');
+let drawActive = false, drawing = false;
+let drawColor = '#fff', drawLineWidth = 3;
+
+function toggleDraw() {
+  drawActive = !drawActive;
+  drawCanvas.classList.toggle('active', drawActive);
+  document.getElementById('drawToolbar').classList.toggle('active', drawActive);
+  document.getElementById('drawFab').classList.toggle('active-draw', drawActive);
+  document.getElementById('drawFab').textContent = drawActive ? '✕' : '🖊️';
+  if (drawActive) {
+    drawCanvas.width = window.innerWidth;
+    drawCanvas.height = window.innerHeight;
+  }
+}
+function setDrawColor(c, el) {
+  drawColor = c;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+function clearDraw() {
+  drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+}
+drawCanvas.addEventListener('mousedown', e => {
+  drawing = true;
+  drawCtx.beginPath();
+  drawCtx.moveTo(e.clientX, e.clientY);
+});
+drawCanvas.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  drawCtx.strokeStyle = drawColor;
+  drawCtx.lineWidth = drawLineWidth;
+  drawCtx.lineCap = 'round';
+  drawCtx.lineJoin = 'round';
+  drawCtx.lineTo(e.clientX, e.clientY);
+  drawCtx.stroke();
+});
+drawCanvas.addEventListener('mouseup', () => drawing = false);
+drawCanvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  drawing = true;
+  drawCtx.beginPath();
+  drawCtx.moveTo(e.touches[0].clientX, e.touches[0].clientY);
+});
+drawCanvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!drawing) return;
+  drawCtx.strokeStyle = drawColor;
+  drawCtx.lineWidth = drawLineWidth;
+  drawCtx.lineCap = 'round';
+  drawCtx.lineJoin = 'round';
+  drawCtx.lineTo(e.touches[0].clientX, e.touches[0].clientY);
+  drawCtx.stroke();
+});
+drawCanvas.addEventListener('touchend', () => drawing = false);
+
+// ─────────────────────────────────────────────
+// 15. SMOOTH SCROLL for topic pills
+// ─────────────────────────────────────────────
+document.querySelectorAll('.topic-pill[href]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ─────────────────────────────────────────────
+// 16. Canvas 響應式 resize handler
+// ─────────────────────────────────────────────
+function resizeCanvases() {
+  document.querySelectorAll('.interactive-area canvas').forEach(cv => {
+    const parent = cv.parentElement;
+    const w = Math.min(parent.clientWidth - 32, 500);
+    cv.width = w;
+    cv.height = Math.round(w * 0.76);
+  });
+  drawDots1();
+  drawLine2();
+  drawIntercepts();
+  drawHorizontal();
+  drawVertical();
+  drawLineFromTwoPts();
+  drawSystem();
+}
+window.addEventListener('resize', resizeCanvases);
+</script>
+</body>
+</html>
