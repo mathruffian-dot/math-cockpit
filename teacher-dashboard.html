@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>老師即時儀表板 — 教學駕駛艙</title>
+  <style>
+    :root { --board: #1a2a1a; --chalk: #e8e4d8; --yellow: #ffd54f; --blue: #81d4fa; --green: #7ed957; --red: #ff6b6b; --wood: #8d6e4a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; background: var(--board); color: var(--chalk); min-height: 100vh; padding: 20px; }
+    header { text-align: center; margin-bottom: 20px; }
+    header h1 { font-size: 1.5rem; color: var(--yellow); }
+    header p { font-size: 0.85rem; opacity: 0.8; margin-top: 6px; }
+
+    .controls {
+      max-width: 1100px; margin: 0 auto 20px; background: #243524;
+      border: 2px solid rgba(232,228,216,0.2); border-radius: 12px; padding: 16px 20px;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center;
+    }
+    .controls label { font-size: 0.9rem; }
+    .controls select {
+      background: #1a2a1a; color: var(--chalk); border: 1px solid rgba(232,228,216,0.3);
+      border-radius: 6px; padding: 8px 12px; font-size: 0.9rem;
+    }
+    .live-dot { width:10px; height:10px; background:var(--green); border-radius:50%; display:inline-block; animation:pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .layout {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px;
+    }
+    @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: #243524; border: 2px solid rgba(232,228,216,0.2);
+      border-radius: 12px; padding: 18px;
+    }
+    .panel h2 { font-size: 1rem; color: var(--yellow); margin-bottom: 12px; }
+
+    .quiz-row {
+      border: 1px solid rgba(232,228,216,0.15); border-radius: 8px;
+      padding: 12px; margin-bottom: 10px;
+    }
+    .quiz-row .qid { font-size: 0.8rem; color: var(--blue); font-family: monospace; }
+    .quiz-row .stats { display: flex; gap: 16px; margin-top: 6px; font-size: 0.85rem; }
+    .quiz-row .stats .label { opacity: 0.7; }
+    .quiz-row .stats .value { font-weight: 700; color: var(--yellow); }
+    .bar { background:#1a2a1a; border-radius:4px; height:8px; overflow:hidden; margin-top:8px; }
+    .bar-fill { background:var(--green); height:100%; transition:width 0.3s; }
+    .bar-fill.warn { background:#ffa726; }
+    .bar-fill.bad { background:var(--red); }
+    .seat-list { font-size: 0.78rem; color: #a8a498; margin-top: 6px; word-break: break-all; }
+
+    .push-form {
+      background: #1a2a1a; border-radius: 8px; padding: 12px; margin-bottom: 12px;
+    }
+    .push-form input, .push-form select, .push-form textarea {
+      width: 100%; background: #243524; color: var(--chalk);
+      border: 1px solid rgba(232,228,216,0.2); border-radius: 4px;
+      padding: 6px 8px; font-size: 0.85rem; margin-top: 4px;
+      font-family: inherit;
+    }
+    .push-form textarea { resize: vertical; min-height: 50px; }
+    .push-form label { font-size: 0.75rem; opacity: 0.8; display: block; margin-top: 6px; }
+    .push-btn {
+      background: var(--yellow); color: #1a2a1a; border: none; border-radius: 6px;
+      padding: 9px 14px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      width: 100%; margin-top: 10px;
+    }
+    .push-btn:hover { filter: brightness(1.1); }
+
+    .pushed-row {
+      border: 1px solid rgba(232,228,216,0.15); border-radius: 6px;
+      padding: 10px; margin-bottom: 8px; font-size: 0.82rem;
+    }
+    .pushed-row .meta { color: var(--blue); font-size: 0.7rem; margin-bottom: 4px; }
+    .pushed-row .question { color: var(--chalk); margin-bottom: 4px; }
+    .pushed-row .target-tag { display:inline-block; background:rgba(255,213,79,0.15); color:var(--yellow); border:1px solid var(--yellow); border-radius:10px; padding:1px 8px; font-size:0.7rem; margin-right:4px; }
+    .close-btn { background:#3a2a2a; color:#ff6b6b; border:1px solid #ff6b6b; border-radius:4px; padding:3px 8px; font-size:0.7rem; cursor:pointer; margin-left:6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 老師即時儀表板</h1>
+    <p><span class="live-dot"></span> Firestore onSnapshot 即時更新 — 不用重新整理</p>
+  </header>
+
+  <div class="controls">
+    <label>班級
+      <select id="class-select" onchange="window.switchClass()">
+        <option value="715">715 班</option>
+        <option value="809">809 班</option>
+      </select>
+    </label>
+    <label>單元
+      <select id="unit-select">
+        <option value="2-2">2-2 二元一次方程式的圖形</option>
+      </select>
+    </label>
+    <span id="meta" style="font-size:0.85rem; opacity:0.85;">— 全班總人數：0</span>
+  </div>
+
+  <div class="layout">
+    <!-- 左：preset 形成性評量即時統計 -->
+    <div class="panel">
+      <h2>📝 形成性評量即時統計（preset）</h2>
+      <div id="preset-stats">尚未有作答</div>
+    </div>
+
+    <!-- 右：即時派題 + 已派題清單 -->
+    <div class="panel">
+      <h2>📡 即時派題</h2>
+      <div class="push-form">
+        <label>題目
+          <textarea id="push-question" placeholder="例如：方程式 2x+y=6 的圖形通過下列哪一點？"></textarea>
+        </label>
+        <label>選項（每行一個，第一行是正解）
+          <textarea id="push-options" placeholder="(2, 2)
+(0, 0)
+(1, 1)
+(3, 3)"></textarea>
+        </label>
+        <label>派給
+          <select id="push-target">
+            <option value="all">全班</option>
+            <option value="below:60">答對率 &lt; 60% 的學生（精熟題）</option>
+            <option value="above:80">答對率 ≥ 80% 的學生（進階題）</option>
+          </select>
+        </label>
+        <button class="push-btn" onclick="window.pushAssignment()">🚀 派題</button>
+      </div>
+      <h2 style="margin-top:18px;">已派出的題目</h2>
+      <div id="pushed-list">尚未派題</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+    import {
+      getFirestore, collection, query, where, onSnapshot,
+      addDoc, doc, updateDoc, getDocs, serverTimestamp
+    } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfhfjELufcQVwXQPhxYe9ll7UbIIOQfNY",
+      authDomain: "my-teaching-tools.firebaseapp.com",
+      projectId: "my-teaching-tools",
+      storageBucket: "my-teaching-tools.firebasestorage.app",
+      messagingSenderId: "257256401647",
+      appId: "1:257256401647:web:9db61fe50e7f22274cc91a"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let currentClass = '715';
+    let totalStudents = 0;
+    let unsubResponses = null;
+    let unsubAssignments = null;
+    let allResponses = [];
+    let allAssignments = [];
+
+    async function loadClassMeta() {
+      const snap = await getDocs(collection(db, 'student_tokens'));
+      let count = 0;
+      snap.forEach(d => { if (d.data().class_id === currentClass) count++; });
+      totalStudents = count;
+      document.getElementById('meta').textContent = `— 全班總人數：${count}`;
+    }
+
+    function renderPreset() {
+      const box = document.getElementById('preset-stats');
+      const presets = allResponses.filter(r => r.assignment_type === 'preset');
+      if (!presets.length) { box.textContent = '尚未有作答'; return; }
+      // 依 assignment_id 群組
+      const groups = {};
+      for (const r of presets) {
+        if (!groups[r.assignment_id]) groups[r.assignment_id] = [];
+        groups[r.assignment_id].push(r);
+      }
+      const keys = Object.keys(groups).sort();
+      box.innerHTML = '';
+      for (const qid of keys) {
+        const list = groups[qid];
+        // 同一座號只算一次（取最後一筆）
+        const bySeat = {};
+        for (const r of list) bySeat[r.seat_number] = r;
+        const answered = Object.keys(bySeat).length;
+        const correct = Object.values(bySeat).filter(r => r.is_correct).length;
+        const pct = answered ? Math.round(correct / answered * 100) : 0;
+        const barClass = pct >= 80 ? '' : pct >= 60 ? 'warn' : 'bad';
+        const seats = Object.keys(bySeat).map(s => parseInt(s,10)).sort((a,b)=>a-b);
+        const row = document.createElement('div');
+        row.className = 'quiz-row';
+        row.innerHTML = `
+          <div class="qid">${qid}</div>
+          <div class="stats">
+            <span><span class="label">已作答</span> <span class="value">${answered}/${totalStudents}</span></span>
+            <span><span class="label">答對率</span> <span class="value">${pct}%</span></span>
+          </div>
+          <div class="bar"><div class="bar-fill ${barClass}" style="width:${pct}%"></div></div>
+          <div class="seat-list">已答座號：${seats.join(', ') || '—'}</div>
+        `;
+        box.appendChild(row);
+      }
+    }
+
+    function renderPushed() {
+      const box = document.getElementById('pushed-list');
+      if (!allAssignments.length) { box.textContent = '尚未派題'; return; }
+      box.innerHTML = '';
+      // 排序：active 優先，再依時間 desc
+      const sorted = [...allAssignments].sort((a,b) => {
+        if ((a.status === 'active') !== (b.status === 'active')) return a.status === 'active' ? -1 : 1;
+        return (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0);
+      });
+      for (const a of sorted) {
+        const responses = allResponses.filter(r => r.assignment_id === a._id && r.assignment_type === 'pushed');
+        const bySeat = {};
+        for (const r of responses) bySeat[r.seat_number] = r;
+        const answered = Object.keys(bySeat).length;
+        const correct = Object.values(bySeat).filter(r => r.is_correct).length;
+        const pct = answered ? Math.round(correct / answered * 100) : 0;
+        const row = document.createElement('div');
+        row.className = 'pushed-row';
+        const targetText = ({all:'全班', 'below:60':'< 60%', 'above:80':'≥ 80%'})[a.target] || a.target;
+        row.innerHTML = `
+          <div class="meta">
+            <span class="target-tag">${targetText}</span>
+            ${a.status === 'active' ? '🟢 進行中' : '⚪ 已關閉'}
+            <button class="close-btn" onclick="window.closeAssignment('${a._id}')">${a.status === 'active' ? '關閉' : '已關'}</button>
+          </div>
+          <div class="question">${(a.quiz_data?.question || '').replace(/</g,'&lt;')}</div>
+          <div class="stats" style="display:flex; gap:14px; font-size:0.78rem;">
+            <span>已作答 <strong style="color:var(--yellow)">${answered}</strong></span>
+            <span>答對率 <strong style="color:var(--yellow)">${pct}%</strong></span>
+          </div>
+        `;
+        box.appendChild(row);
+      }
+    }
+
+    function subscribe() {
+      if (unsubResponses) unsubResponses();
+      if (unsubAssignments) unsubAssignments();
+      const respQ = query(collection(db, 'quiz_responses'), where('class_id', '==', currentClass));
+      unsubResponses = onSnapshot(respQ, snap => {
+        allResponses = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+        renderPreset();
+        renderPushed();
+      });
+      const assignQ = query(collection(db, 'quiz_assignments'), where('class_id', '==', currentClass));
+      unsubAssignments = onSnapshot(assignQ, snap => {
+        allAssignments = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+        renderPushed();
+      });
+    }
+
+    window.switchClass = async function() {
+      currentClass = document.getElementById('class-select').value;
+      await loadClassMeta();
+      subscribe();
+    };
+
+    window.pushAssignment = async function() {
+      const question = document.getElementById('push-question').value.trim();
+      const optsRaw = document.getElementById('push-options').value.trim();
+      const target = document.getElementById('push-target').value;
+      const unit = document.getElementById('unit-select').value;
+      if (!question || !optsRaw) { alert('請填入題目和選項'); return; }
+      const options = optsRaw.split('\n').map(s => s.trim()).filter(Boolean);
+      if (options.length < 2) { alert('至少要 2 個選項'); return; }
+      try {
+        await addDoc(collection(db, 'quiz_assignments'), {
+          unit, target,
+          quiz_type: 'choice',
+          quiz_data: { question, options, correct_index: 0 },  // 第一行視為正解
+          status: 'active',
+          class_id: currentClass,
+          created_at: serverTimestamp()
+        });
+        document.getElementById('push-question').value = '';
+        document.getElementById('push-options').value = '';
+      } catch (e) {
+        alert('派題失敗：' + e.message);
+      }
+    };
+
+    window.closeAssignment = async function(id) {
+      try {
+        await updateDoc(doc(db, 'quiz_assignments', id), { status: 'closed' });
+      } catch (e) {
+        alert('關閉失敗：' + e.message);
+      }
+    };
+
+    // 啟動
+    (async () => {
+      await loadClassMeta();
+      subscribe();
+    })();
+  </script>
+</body>
+</html>

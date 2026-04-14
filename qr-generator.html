@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code 通行證產生器 — 教學駕駛艙</title>
+  <style>
+    :root { --board: #1a2a1a; --chalk: #e8e4d8; --yellow: #ffd54f; --blue: #81d4fa; --wood: #8d6e4a; --green: #7ed957; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; background: var(--board); color: var(--chalk); min-height: 100vh; padding: 20px; }
+    header { text-align: center; margin-bottom: 24px; }
+    header h1 { font-size: 1.5rem; color: var(--yellow); }
+    header p { font-size: 0.85rem; opacity: 0.8; margin-top: 6px; }
+    .controls {
+      max-width: 720px; margin: 0 auto 24px; background: #243524;
+      border: 2px solid rgba(232,228,216,0.2); border-radius: 12px; padding: 20px;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center;
+    }
+    .controls label { font-size: 0.9rem; }
+    .controls select, .controls input {
+      background: #1a2a1a; color: var(--chalk); border: 1px solid rgba(232,228,216,0.3);
+      border-radius: 6px; padding: 8px 12px; font-size: 0.9rem;
+    }
+    .controls button {
+      background: var(--yellow); color: #1a2a1a; border: none; border-radius: 6px;
+      padding: 9px 18px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    }
+    .controls button.print { background: var(--blue); }
+    .controls button:hover { filter: brightness(1.1); }
+    .status { max-width: 720px; margin: 0 auto 20px; text-align: center; font-size: 0.85rem; opacity: 0.85; }
+    .grid {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    }
+    .qr-card {
+      background: #fff; border: 2px solid #1a2a1a; border-radius: 8px;
+      padding: 10px 6px; text-align: center; color: #1a2a1a; page-break-inside: avoid;
+    }
+    .qr-card .seat { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .qr-card canvas, .qr-card img { width: 100%; height: auto; max-width: 140px; }
+    .qr-card .token { font-family: monospace; font-size: 0.65rem; color: #666; margin-top: 4px; word-break: break-all; }
+
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      header, .controls, .status { display: none; }
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px; }
+      .qr-card { border: 1px dashed #999; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📱 QR Code 通行證產生器</h1>
+    <p>EP10：一人一碼教學駕駛艙 — 從 Firestore 讀取已種入的學生 token</p>
+  </header>
+
+  <div class="controls">
+    <label>班級
+      <select id="class-select">
+        <option value="all">全部</option>
+        <option value="715">715 班</option>
+        <option value="809">809 班</option>
+      </select>
+    </label>
+    <label>連結到單元
+      <select id="unit-select">
+        <option value="2-2-linear-equation-graph/">2-2 二元一次方程式的圖形</option>
+        <option value="3-1-triangles-polygons/">3-1 三角形與多邊形</option>
+      </select>
+    </label>
+    <button onclick="loadAndRender()">🔄 重新載入</button>
+    <button class="print" onclick="window.print()">🖨️ 列印 A4</button>
+  </div>
+
+  <div class="status" id="status">載入中…</div>
+  <div class="grid" id="grid"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+    import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfhfjELufcQVwXQPhxYe9ll7UbIIOQfNY",
+      authDomain: "my-teaching-tools.firebaseapp.com",
+      projectId: "my-teaching-tools",
+      storageBucket: "my-teaching-tools.firebasestorage.app",
+      messagingSenderId: "257256401647",
+      appId: "1:257256401647:web:9db61fe50e7f22274cc91a"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 站台基底 URL：自動偵測 GitHub Pages 或本地
+    function getBaseUrl() {
+      const { origin, pathname } = location;
+      // pathname 例如 "/math-cockpit/qr-generator.html" → "/math-cockpit/"
+      const dir = pathname.replace(/\/[^/]*$/, '/');
+      return origin + dir;
+    }
+
+    window.loadAndRender = async function() {
+      const status = document.getElementById('status');
+      const grid = document.getElementById('grid');
+      status.textContent = '從 Firestore 載入學生 token…';
+      grid.innerHTML = '';
+      try {
+        const snap = await getDocs(collection(db, 'student_tokens'));
+        const filterClass = document.getElementById('class-select').value;
+        const unitPath = document.getElementById('unit-select').value;
+        const base = getBaseUrl();
+
+        let students = [];
+        snap.forEach(d => {
+          const data = d.data();
+          if (filterClass === 'all' || data.class_id === filterClass) {
+            students.push({ token: d.id, ...data });
+          }
+        });
+        students.sort((a, b) => (a.class_id + '').localeCompare(b.class_id + '') || a.seat_number - b.seat_number);
+
+        if (!students.length) {
+          status.textContent = '⚠️ 沒有找到學生 token，請先用 Firebase MCP 種入。';
+          return;
+        }
+
+        status.textContent = `共 ${students.length} 位學生 — 點「列印 A4」可印出通行證`;
+
+        for (const s of students) {
+          const url = `${base}${unitPath}?token=${s.token}`;
+          const card = document.createElement('div');
+          card.className = 'qr-card';
+          card.innerHTML = `
+            <div class="seat">${s.class_id} 班 ${String(s.seat_number).padStart(2,'0')} 號</div>
+            <canvas></canvas>
+            <div class="token">${s.token}</div>
+          `;
+          grid.appendChild(card);
+          await QRCode.toCanvas(card.querySelector('canvas'), url, { width: 180, margin: 1 });
+        }
+      } catch (e) {
+        console.error(e);
+        status.textContent = '❌ 載入失敗：' + e.message;
+      }
+    };
+
+    loadAndRender();
+  </script>
+</body>
+</html>

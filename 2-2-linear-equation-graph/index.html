@@ -490,6 +490,21 @@
   <button class="mode-btn" onclick="toggleMode()">🔑 切換教師模式</button>
 </div>
 
+<!-- ── 學生身分列（EP10：一人一碼連線版） ── -->
+<div id="student-bar" style="display:none; background:#243524; border:2px solid #ffd54f; border-radius:10px; padding:10px 16px; margin:10px auto; max-width:920px; font-size:0.9rem; text-align:center; color:#e8e4d8;">
+  <span id="student-bar-text">📡 連線中…</span>
+</div>
+
+<!-- ── 派題彈窗（老師即時派題用） ── -->
+<div id="assignment-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#1a2a1a; border:3px solid #ffd54f; border-radius:16px; padding:28px; max-width:480px; width:92%; color:#e8e4d8;">
+    <div style="color:#ffd54f; font-size:0.85rem; margin-bottom:6px;">📡 老師即時派題</div>
+    <div id="assignment-q-text" style="font-size:1rem; line-height:1.7; margin-bottom:16px;"></div>
+    <div id="assignment-options" style="display:flex; flex-direction:column; gap:8px;"></div>
+    <div id="assignment-feedback" style="margin-top:14px; font-size:0.85rem; display:none;"></div>
+  </div>
+</div>
+
 <div class="main-wrap">
 <div class="container">
 
@@ -1179,6 +1194,19 @@ function checkQ(btn, qid, correct) {
   const fb = document.getElementById('fb-' + qid);
   fb.classList.add('show', correct ? 'correct-fb' : 'wrong-fb');
   fb.textContent = (correct ? '✅ 正確！' : '❌ ') + fb.textContent;
+
+  // EP10 連線版：把作答結果寫入 Firestore（若已綁定 token）
+  if (typeof window.recordResponse === 'function') {
+    const optionLabel = btn.textContent.trim();
+    window.recordResponse({
+      assignment_id: qid,        // preset 評量直接用 qid 當 assignment_id
+      assignment_type: 'preset',
+      unit: '2-2',
+      quiz_type: 'choice',
+      answer: { option: optionLabel },
+      is_correct: !!correct
+    });
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -2159,5 +2187,152 @@ function resizeCanvases() {
 }
 window.addEventListener('resize', resizeCanvases);
 </script>
+
+<!-- ─────────────────────────────────────────────
+     EP10 連線版：Firebase 整合
+     - 從 ?token= 解析學生身分
+     - checkQ 寫入 quiz_responses
+     - onSnapshot 訂閱 quiz_assignments 即時派題
+     ───────────────────────────────────────────── -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+  import {
+    getFirestore, doc, getDoc, addDoc, collection, query, where,
+    onSnapshot, serverTimestamp
+  } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBfhfjELufcQVwXQPhxYe9ll7UbIIOQfNY",
+    authDomain: "my-teaching-tools.firebaseapp.com",
+    projectId: "my-teaching-tools",
+    storageBucket: "my-teaching-tools.firebasestorage.app",
+    messagingSenderId: "257256401647",
+    appId: "1:257256401647:web:9db61fe50e7f22274cc91a"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ── 1. 解析 token，識別學生 ──
+  const token = new URLSearchParams(location.search).get('token');
+  const bar = document.getElementById('student-bar');
+  const barText = document.getElementById('student-bar-text');
+  let student = null; // { class_id, seat_number, token }
+
+  if (!token) {
+    bar.style.display = 'block';
+    bar.style.borderColor = '#a8a498';
+    barText.innerHTML = '🧪 <strong>預覽模式</strong>：未掃 QR Code，作答不會記錄。要連線請從 QR Code 進入。';
+  } else {
+    try {
+      const snap = await getDoc(doc(db, 'student_tokens', token));
+      if (!snap.exists()) {
+        bar.style.display = 'block';
+        bar.style.borderColor = '#ff6b6b';
+        barText.innerHTML = '⚠️ token 無效，請聯絡老師重新取得 QR Code。';
+      } else {
+        student = { ...snap.data(), token };
+        bar.style.display = 'block';
+        barText.innerHTML = `📡 已連線：<strong style="color:#ffd54f">${student.class_id} 班 ${String(student.seat_number).padStart(2,'0')} 號</strong> 同學`;
+        startListening();
+      }
+    } catch (e) {
+      console.error('讀取 token 失敗', e);
+      bar.style.display = 'block';
+      bar.style.borderColor = '#ff6b6b';
+      barText.innerHTML = '⚠️ 無法連線到資料庫：' + e.message;
+    }
+  }
+
+  // ── 2. 對外暴露：寫入學生作答 ──
+  window.recordResponse = async function(payload) {
+    if (!student) return; // 預覽模式不寫入
+    try {
+      await addDoc(collection(db, 'quiz_responses'), {
+        ...payload,
+        class_id: student.class_id,
+        seat_number: student.seat_number,
+        token: student.token,
+        submitted_at: serverTimestamp()
+      });
+    } catch (e) {
+      console.error('寫入作答失敗', e);
+    }
+  };
+
+  // ── 3. 訂閱即時派題（onSnapshot） ──
+  const seenAssignments = new Set();
+  function startListening() {
+    const q = query(
+      collection(db, 'quiz_assignments'),
+      where('class_id', '==', student.class_id),
+      where('status', '==', 'active')
+    );
+    onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach(change => {
+        if (change.type !== 'added') return;
+        const data = change.doc.data();
+        const id = change.doc.id;
+        if (seenAssignments.has(id)) return;
+        seenAssignments.add(id);
+        // 過濾 target：all / above:80 / below:60 / seat:1,3,7
+        if (matchTarget(data.target)) {
+          showAssignmentModal(id, data);
+        }
+      });
+    });
+  }
+
+  function matchTarget(target) {
+    if (!target || target === 'all') return true;
+    if (target.startsWith('seat:')) {
+      const seats = target.slice(5).split(',').map(s => parseInt(s.trim(), 10));
+      return seats.includes(student.seat_number);
+    }
+    // above/below 邏輯之後再做（需要 student 累計答對率），MVP 階段視為全班收
+    if (target.startsWith('above:') || target.startsWith('below:')) return true;
+    return false;
+  }
+
+  function showAssignmentModal(assignmentId, data) {
+    const modal = document.getElementById('assignment-modal');
+    const qText = document.getElementById('assignment-q-text');
+    const optsBox = document.getElementById('assignment-options');
+    const fb = document.getElementById('assignment-feedback');
+    const qd = data.quiz_data || {};
+    qText.textContent = qd.question || '（無題目內容）';
+    optsBox.innerHTML = '';
+    fb.style.display = 'none';
+    fb.textContent = '';
+    let answered = false;
+    (qd.options || []).forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'q-opt';
+      btn.textContent = opt;
+      btn.style.cssText = 'background:#243524; color:#e8e4d8; border:2px solid rgba(232,228,216,0.3); border-radius:8px; padding:10px 14px; font-size:0.95rem; cursor:pointer; text-align:left;';
+      btn.onclick = async () => {
+        if (answered) return;
+        answered = true;
+        const correct = (idx === qd.correct_index);
+        btn.style.borderColor = correct ? '#7ed957' : '#ff6b6b';
+        btn.style.background = correct ? 'rgba(126,217,87,0.15)' : 'rgba(255,107,107,0.15)';
+        fb.style.display = 'block';
+        fb.style.color = correct ? '#7ed957' : '#ff6b6b';
+        fb.textContent = correct ? '✅ 正確！' : '❌ 答錯了';
+        await window.recordResponse?.({
+          assignment_id: assignmentId,
+          assignment_type: 'pushed',
+          unit: data.unit || '2-2',
+          quiz_type: 'choice',
+          answer: { option: opt, index: idx },
+          is_correct: correct
+        });
+        setTimeout(() => { modal.style.display = 'none'; }, 1800);
+      };
+      optsBox.appendChild(btn);
+    });
+    modal.style.display = 'flex';
+  }
+</script>
+
 </body>
 </html>
